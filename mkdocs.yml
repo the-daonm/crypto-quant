@@ -23,6 +23,7 @@ theme:
 
 nav:
   - Home: index.md
+  - Model comparison: model-comparison.md
   - API reference: api.md
   - Contributing: contributing.md
   - Changelog: changelog.md
