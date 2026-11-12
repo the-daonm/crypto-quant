@@ -41,7 +41,7 @@ st.sidebar.caption("Dữ liệu: Binance public API qua ccxt. Chỉ dùng cho m�
 
 # ---------------- Run ----------------
 bt, preds, folds, importance, metrics = get_experiment(symbol, tf, model, thr, fee, horizon, band)
-ohlcv = get_ohlcv(symbol, tf).loc[bt.index[0]: bt.index[-1]]
+ohlcv = get_ohlcv(symbol, tf).loc[bt.index[0] : bt.index[-1]]
 bh = buy_and_hold_metrics(bt, tf)
 
 st.title(f"{symbol} · {tf} · {model}")
@@ -64,23 +64,60 @@ pos = bt["position"]
 entries = pos[(pos.diff() == 1) | ((pos == 1) & (pos.shift().isna()))].index
 exits = pos[pos.diff() == -1].index
 
-fig = make_subplots(rows=3, cols=1, shared_xaxes=True, row_heights=[0.5, 0.3, 0.2], vertical_spacing=0.03,
-                    subplot_titles=("Giá và tín hiệu", "Equity (vốn ban đầu = 1)", "Drawdown"))
-fig.add_trace(go.Candlestick(x=ohlcv.index, open=ohlcv["open"], high=ohlcv["high"], low=ohlcv["low"],
-                             close=ohlcv["close"], name="Giá", showlegend=False), row=1, col=1)
-if len(entries) <= 400:   # quá nhiều marker sẽ khó nhìn
-    fig.add_trace(go.Scatter(x=entries, y=ohlcv.loc[entries, "close"], mode="markers", name="Vào lệnh",
-                             marker=dict(symbol="triangle-up", size=8, color="#16a34a")), row=1, col=1)
-    fig.add_trace(go.Scatter(x=exits, y=ohlcv.loc[exits, "close"], mode="markers", name="Thoát lệnh",
-                             marker=dict(symbol="triangle-down", size=8, color="#dc2626")), row=1, col=1)
+fig = make_subplots(
+    rows=3,
+    cols=1,
+    shared_xaxes=True,
+    row_heights=[0.5, 0.3, 0.2],
+    vertical_spacing=0.03,
+    subplot_titles=("Giá và tín hiệu", "Equity (vốn ban đầu = 1)", "Drawdown"),
+)
+fig.add_trace(
+    go.Candlestick(
+        x=ohlcv.index,
+        open=ohlcv["open"],
+        high=ohlcv["high"],
+        low=ohlcv["low"],
+        close=ohlcv["close"],
+        name="Giá",
+        showlegend=False,
+    ),
+    row=1,
+    col=1,
+)
+if len(entries) <= 400:  # quá nhiều marker sẽ khó nhìn
+    fig.add_trace(
+        go.Scatter(
+            x=entries,
+            y=ohlcv.loc[entries, "close"],
+            mode="markers",
+            name="Vào lệnh",
+            marker=dict(symbol="triangle-up", size=8, color="#16a34a"),
+        ),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=exits,
+            y=ohlcv.loc[exits, "close"],
+            mode="markers",
+            name="Thoát lệnh",
+            marker=dict(symbol="triangle-down", size=8, color="#dc2626"),
+        ),
+        row=1,
+        col=1,
+    )
 fig.add_trace(go.Scatter(x=bt.index, y=bt["equity"], name=model, line=dict(color="#2563eb")), row=2, col=1)
 fig.add_trace(go.Scatter(x=bt.index, y=bt["bh_equity"], name="Buy & Hold", line=dict(color="#9ca3af")), row=2, col=1)
 for col, name, color in (("equity", model, "#2563eb"), ("bh_equity", "B&H", "#9ca3af")):
     dd = bt[col] / bt[col].cummax() - 1
-    fig.add_trace(go.Scatter(x=bt.index, y=dd, name=f"DD {name}", line=dict(color=color), showlegend=False),
-                  row=3, col=1)
-fig.update_layout(height=850, xaxis_rangeslider_visible=False, margin=dict(t=40, b=10),
-                  legend=dict(orientation="h", y=1.04))
+    fig.add_trace(
+        go.Scatter(x=bt.index, y=dd, name=f"DD {name}", line=dict(color=color), showlegend=False), row=3, col=1
+    )
+fig.update_layout(
+    height=850, xaxis_rangeslider_visible=False, margin=dict(t=40, b=10), legend=dict(orientation="h", y=1.04)
+)
 fig.update_yaxes(type="log", row=1, col=1)
 fig.update_yaxes(tickformat=".0%", row=3, col=1)
 st.plotly_chart(fig, width="stretch")
@@ -91,11 +128,22 @@ all_runs = {m: get_experiment(symbol, tf, m, thr, fee, horizon, band) for m in M
 rows = [bh] + [r[4] for r in all_runs.values()]
 table = pd.DataFrame(rows).set_index("model")
 st.dataframe(
-    table.style.format({
-        "total_return": "{:.1%}", "cagr": "{:.1%}", "sharpe": "{:.2f}", "max_drawdown": "{:.1%}",
-        "accuracy": "{:.1%}", "auc": "{:.3f}", "f1": "{:.3f}", "up_rate": "{:.1%}",
-        "exposure": "{:.0%}", "win_rate": "{:.1%}", "n_trades": "{:,.0f}",
-    }, na_rep="–"),
+    table.style.format(
+        {
+            "total_return": "{:.1%}",
+            "cagr": "{:.1%}",
+            "sharpe": "{:.2f}",
+            "max_drawdown": "{:.1%}",
+            "accuracy": "{:.1%}",
+            "auc": "{:.3f}",
+            "f1": "{:.3f}",
+            "up_rate": "{:.1%}",
+            "exposure": "{:.0%}",
+            "win_rate": "{:.1%}",
+            "n_trades": "{:,.0f}",
+        },
+        na_rep="–",
+    ),
     width="stretch",
 )
 
@@ -105,12 +153,17 @@ if hs:
     bts = {m: r[0] for m, r in all_runs.items()}
     cols = ["total_return", "cagr", "sharpe", "max_drawdown", "n_trades"]
     fmt = {
-        "total_return": "{:.1%}", "cagr": "{:.1%}", "sharpe": "{:.2f}",
-        "max_drawdown": "{:.1%}", "n_trades": "{:,.0f}",
+        "total_return": "{:.1%}",
+        "cagr": "{:.1%}",
+        "sharpe": "{:.2f}",
+        "max_drawdown": "{:.1%}",
+        "n_trades": "{:,.0f}",
     }
     st.subheader("Design và holdout")
-    st.caption(f"Cấu hình mặc định được chọn chỉ dựa trên dữ liệu trước {hs}. "
-               "Holdout là dữ liệu chưa từng dùng để chọn cấu hình, nên đây là phép thử trung thực nhất.")
+    st.caption(
+        f"Cấu hình mặc định được chọn chỉ dựa trên dữ liệu trước {hs}. "
+        "Holdout là dữ liệu chưa từng dùng để chọn cấu hình, nên đây là phép thử trung thực nhất."
+    )
     a, b = st.columns(2)
     a.markdown(f"**Design** (< {hs})")
     a.dataframe(period_summary(bts, tf, end=hs)[cols].style.format(fmt, na_rep="–"), width="stretch")

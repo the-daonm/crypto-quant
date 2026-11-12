@@ -35,8 +35,8 @@ def backtest(
 ) -> pd.DataFrame:
     """Trả về DataFrame: position, trades, strat_ret, bh_ret, equity, bh_equity (log-return)."""
     position = positions(proba, threshold, band)
-    trades = position.diff().abs().fillna(position.iloc[0])   # lệnh đầu tiên nếu vào ngay
-    cost = np.log1p(-fee * trades)                             # phí tính trên vốn khi đổi vị thế
+    trades = position.diff().abs().fillna(position.iloc[0])  # lệnh đầu tiên nếu vào ngay
+    cost = np.log1p(-fee * trades)  # phí tính trên vốn khi đổi vị thế
     strat = position * fwd_ret + cost
     out = pd.DataFrame(
         {

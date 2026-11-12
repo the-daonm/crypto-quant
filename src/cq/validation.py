@@ -42,8 +42,8 @@ def choose_threshold(model_name, X, y, fwd, fee, band=0.0, val_frac=0.25):
 
 @dataclass
 class WalkForwardResult:
-    predictions: pd.DataFrame                      # index thời gian: proba, y, fwd_ret, fold, threshold
-    folds: pd.DataFrame                            # thông tin từng fold
+    predictions: pd.DataFrame  # index thời gian: proba, y, fwd_ret, fold, threshold
+    folds: pd.DataFrame  # thông tin từng fold
     importance: pd.Series | None = field(default=None)
 
 
@@ -70,9 +70,7 @@ def run_walk_forward(
         proba = model.predict_proba(X.iloc[te])[:, 1]
 
         thr = (
-            choose_threshold(model_name, Xtr, ytr, fwd.iloc[tr], fee, band)
-            if threshold == "auto"
-            else float(threshold)
+            choose_threshold(model_name, Xtr, ytr, fwd.iloc[tr], fee, band) if threshold == "auto" else float(threshold)
         )
         preds.append(
             pd.DataFrame(
@@ -82,8 +80,15 @@ def run_walk_forward(
         )
         acc = float(((proba > 0.5).astype(int) == y.iloc[te].to_numpy()).mean())
         folds.append(
-            {"fold": k, "train_end": X.index[tr[-1]], "test_start": X.index[te[0]],
-             "test_end": X.index[te[-1]], "n_test": len(te), "accuracy": acc, "threshold": thr}
+            {
+                "fold": k,
+                "train_end": X.index[tr[-1]],
+                "test_start": X.index[te[0]],
+                "test_end": X.index[te[-1]],
+                "n_test": len(te),
+                "accuracy": acc,
+                "threshold": thr,
+            }
         )
         imp = feature_importance(model, X.columns)
         if imp is not None:

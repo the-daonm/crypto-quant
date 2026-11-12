@@ -30,10 +30,10 @@ def build_features(df: pd.DataFrame, n_lags: int = 5) -> pd.DataFrame:
     f = pd.DataFrame(index=df.index)
 
     for k in range(1, n_lags + 1):
-        f[f"ret_lag{k}"] = logret.shift(k - 1)          # ret_lag1 = return của chính nến t
+        f[f"ret_lag{k}"] = logret.shift(k - 1)  # ret_lag1 = return của chính nến t
     for w in (5, 10, 20):
-        f[f"mom_{w}"] = np.log(close / close.shift(w))   # momentum
-        f[f"vol_{w}"] = logret.rolling(w).std()          # volatility
+        f[f"mom_{w}"] = np.log(close / close.shift(w))  # momentum
+        f[f"vol_{w}"] = logret.rolling(w).std()  # volatility
 
     f["rsi_14"] = rsi(close, 14)
 
@@ -41,7 +41,7 @@ def build_features(df: pd.DataFrame, n_lags: int = 5) -> pd.DataFrame:
     ema26 = close.ewm(span=26, adjust=False, min_periods=26).mean()
     macd = ema12 - ema26
     signal = macd.ewm(span=9, adjust=False, min_periods=9).mean()
-    f["macd_hist"] = (macd - signal) / close             # chuẩn hoá theo giá
+    f["macd_hist"] = (macd - signal) / close  # chuẩn hoá theo giá
 
     ma20, sd20 = close.rolling(20).mean(), close.rolling(20).std()
     f["bb_pctb"] = (close - (ma20 - 2 * sd20)) / (4 * sd20)

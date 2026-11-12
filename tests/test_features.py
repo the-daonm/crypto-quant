@@ -13,9 +13,7 @@ def _synthetic_ohlcv(n: int = 400, seed: int = 0) -> pd.DataFrame:
     low = np.minimum(open_, close) * (1 - rng.uniform(0, 0.01, n))
     volume = rng.uniform(1e3, 1e4, n)
     idx = pd.date_range("2020-01-01", periods=n, freq="D", tz="UTC")
-    return pd.DataFrame(
-        {"open": open_, "high": high, "low": low, "close": close, "volume": volume}, index=idx
-    )
+    return pd.DataFrame({"open": open_, "high": high, "low": low, "close": close, "volume": volume}, index=idx)
 
 
 def test_features_do_not_use_future_data():
@@ -25,7 +23,7 @@ def test_features_do_not_use_future_data():
     base = build_features(df)
 
     tampered = df.copy()
-    tampered.iloc[t + 1 :] *= 3.0          # phá toàn bộ tương lai
+    tampered.iloc[t + 1 :] *= 3.0  # phá toàn bộ tương lai
     after = build_features(tampered)
 
     pd.testing.assert_frame_equal(base.iloc[: t + 1], after.iloc[: t + 1])
@@ -43,7 +41,7 @@ def test_make_dataset_aligns_and_drops_nan():
     X, y, fwd = make_dataset(build_features(df), df["close"])
     assert len(X) == len(y) == len(fwd)
     assert not X.isna().any().any()
-    assert X.index[-1] < df.index[-1]       # nến cuối không có nhãn
+    assert X.index[-1] < df.index[-1]  # nến cuối không có nhãn
     assert ((fwd > 0).astype(int) == y).all()
 
 
@@ -55,6 +53,6 @@ def test_multi_bar_label_and_dataset():
 
     df = _synthetic_ohlcv()
     X, y, fwd = make_dataset(build_features(df), df["close"], horizon=3)
-    assert X.index[-1] == df.index[-4]           # 3 nến cuối chưa có nhãn
+    assert X.index[-1] == df.index[-4]  # 3 nến cuối chưa có nhãn
     expected = np.log(df["close"]).diff().shift(-1).reindex(fwd.index)
-    np.testing.assert_allclose(fwd, expected)     # backtest vẫn dùng return 1 nến
+    np.testing.assert_allclose(fwd, expected)  # backtest vẫn dùng return 1 nến

@@ -55,10 +55,13 @@ def run_experiment(
 
     X, y, fwd = make_dataset(build_features(ohlcv), ohlcv["close"], horizon=horizon)
     wf = run_walk_forward(
-        model, X, y, fwd,
+        model,
+        X,
+        y,
+        fwd,
         train_min=wf_cfg["train_min"][timeframe],
         test_size=wf_cfg["test_size"][timeframe],
-        gap=max(wf_cfg["gap"], horizon),   # nhãn chồng lấn `horizon` nến → embargo tương ứng
+        gap=max(wf_cfg["gap"], horizon),  # nhãn chồng lấn `horizon` nến → embargo tương ứng
         threshold=threshold,
         fee=fee,
         band=band,
@@ -97,8 +100,17 @@ def period_summary(backtests: dict[str, pd.DataFrame], timeframe: str, start=Non
     return pd.DataFrame(rows).set_index("model")
 
 
-def run_all(symbol: str, timeframe: str, cfg: dict, threshold=None, fee=None, horizon=None, band=None,
-            models=MODEL_NAMES, refresh=False) -> tuple[pd.DataFrame, dict[str, Experiment]]:
+def run_all(
+    symbol: str,
+    timeframe: str,
+    cfg: dict,
+    threshold=None,
+    fee=None,
+    horizon=None,
+    band=None,
+    models=MODEL_NAMES,
+    refresh=False,
+) -> tuple[pd.DataFrame, dict[str, Experiment]]:
     ohlcv = load_ohlcv(symbol, timeframe, cfg["since"], cfg["exchange"], refresh=refresh)
     exps = {m: run_experiment(ohlcv, timeframe, m, cfg, threshold, fee, horizon, band) for m in models}
     any_bt = next(iter(exps.values())).bt
@@ -124,10 +136,15 @@ def main() -> None:
 
     summary, exps = run_all(args.symbol, args.tf, cfg, thr, args.fee, args.horizon, args.band, refresh=args.refresh)
     start, end = next(iter(exps.values())).bt.index[[0, -1]]
-    used = {k: v if v is not None else cfg.get(k) for k, v in
-            {"threshold": thr, "band": args.band, "horizon": args.horizon, "fee": args.fee}.items()}
-    print(f"\n{args.symbol} {args.tf} | out-of-sample {start.date()} → {end.date()} | "
-          + " ".join(f"{k}={v}" for k, v in used.items()) + "\n")
+    used = {
+        k: v if v is not None else cfg.get(k)
+        for k, v in {"threshold": thr, "band": args.band, "horizon": args.horizon, "fee": args.fee}.items()
+    }
+    print(
+        f"\n{args.symbol} {args.tf} | out-of-sample {start.date()} → {end.date()} | "
+        + " ".join(f"{k}={v}" for k, v in used.items())
+        + "\n"
+    )
     cols = ["total_return", "cagr", "sharpe", "max_drawdown", "n_trades"]
     with pd.option_context("display.float_format", "{:,.3f}".format, "display.width", 200, "display.max_columns", None):
         print(summary)

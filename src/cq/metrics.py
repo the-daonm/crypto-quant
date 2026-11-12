@@ -25,8 +25,9 @@ def max_drawdown(equity: pd.Series) -> float:
     return float((equity / equity.cummax() - 1).min())
 
 
-def trading_metrics(log_ret: pd.Series, periods_per_year: int, trades: pd.Series | None = None,
-                    position: pd.Series | None = None) -> dict:
+def trading_metrics(
+    log_ret: pd.Series, periods_per_year: int, trades: pd.Series | None = None, position: pd.Series | None = None
+) -> dict:
     equity = np.exp(log_ret.cumsum())
     years = len(log_ret) / periods_per_year
     simple = np.expm1(log_ret)

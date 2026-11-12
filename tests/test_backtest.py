@@ -54,6 +54,7 @@ def test_trading_metrics_flat_returns():
 
 def test_hysteresis_holds_position_inside_band():
     from cq.backtest import positions
+
     idx = pd.date_range("2021-01-01", periods=6, freq="D", tz="UTC")
     proba = pd.Series([0.52, 0.56, 0.52, 0.48, 0.44, 0.50], index=idx)
     assert positions(proba, 0.5, band=0.05).tolist() == [0, 1, 1, 1, 0, 0]
