@@ -79,12 +79,11 @@ def buy_and_hold_metrics(bt: pd.DataFrame, timeframe: str) -> dict:
     return {"model": "buy_and_hold", **trading_metrics(bt["bh_ret"], PERIODS_PER_YEAR[timeframe])}
 
 
-def period_summary(exps: dict[str, Experiment], timeframe: str, start=None, end=None) -> pd.DataFrame:
-    """Metric trading của từng model trên một khoảng thời gian [start, end)."""
+def period_summary(backtests: dict[str, pd.DataFrame], timeframe: str, start=None, end=None) -> pd.DataFrame:
+    """Metric trading của từng model (tên → DataFrame backtest) trên khoảng thời gian [start, end)."""
     ppy = PERIODS_PER_YEAR[timeframe]
     rows = []
-    for name, e in exps.items():
-        bt = e.bt
+    for name, bt in backtests.items():
         mask = pd.Series(True, index=bt.index)
         if start is not None:
             mask &= bt.index >= pd.Timestamp(start, tz="UTC")
@@ -135,9 +134,10 @@ def main() -> None:
         hs = cfg.get("holdout_start")
         if hs:
             print(f"\n— Giai đoạn design (< {hs}): dùng để chọn cấu hình —")
-            print(period_summary(exps, args.tf, end=hs)[cols])
+            bts = {m: e.bt for m, e in exps.items()}
+            print(period_summary(bts, args.tf, end=hs)[cols])
             print(f"\n— Giai đoạn holdout (>= {hs}): không dùng khi chọn cấu hình —")
-            print(period_summary(exps, args.tf, start=hs)[cols])
+            print(period_summary(bts, args.tf, start=hs)[cols])
 
     RESULTS_DIR.mkdir(exist_ok=True)
     tag = f"{args.symbol.replace('/', '-')}_{args.tf}"
