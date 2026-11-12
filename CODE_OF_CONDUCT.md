@@ -1,54 +1,83 @@
-# Quy tắc ứng xử
+# Contributor Covenant Code of Conduct
 
-Dự án áp dụng [Contributor Covenant](https://www.contributor-covenant.org/), phiên bản 2.1.
-Bản gốc tiếng Anh đầy đủ: https://www.contributor-covenant.org/version/2/1/code_of_conduct/
-Dưới đây là bản tóm tắt tiếng Việt; khi có khác biệt thì bản gốc được ưu tiên.
+## Our Pledge
 
-## Cam kết
+We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
 
-Chúng tôi, những người tham gia và duy trì dự án, cam kết tạo ra một môi trường thân thiện, không quấy rối cho tất cả mọi người,
-bất kể tuổi tác, ngoại hình, khuyết tật, dân tộc, bản dạng và thể hiện giới, trình độ, quốc tịch, ngoại hình, chủng tộc,
-tôn giáo hay xu hướng tính dục.
+We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
 
-## Hành vi được khuyến khích
+## Our Standards
 
-- Thể hiện sự đồng cảm và tử tế với người khác.
-- Tôn trọng quan điểm và kinh nghiệm khác mình.
-- Góp ý mang tính xây dựng, đồng thời biết tiếp nhận góp ý.
-- Nhận trách nhiệm, xin lỗi khi mắc lỗi và học hỏi từ đó.
-- Tập trung vào điều tốt nhất cho cộng đồng, không chỉ cho cá nhân.
+Examples of behavior that contributes to a positive environment for our community include:
 
-## Hành vi không được chấp nhận
+* Demonstrating empathy and kindness toward other people
+* Being respectful of differing opinions, viewpoints, and experiences
+* Giving and gracefully accepting constructive feedback
+* Accepting responsibility and apologizing to those affected by our mistakes, and learning from the experience
+* Focusing on what is best not just for us as individuals, but for the overall community
 
-- Ngôn ngữ hoặc hình ảnh khiêu dâm, hay sự chú ý có tính tình dục không mong muốn.
-- Chế giễu, bình luận xúc phạm, công kích cá nhân hoặc chính trị.
-- Quấy rối công khai hay riêng tư.
-- Công bố thông tin cá nhân của người khác (địa chỉ, email, …) khi chưa được cho phép.
-- Các hành vi khác được xem là không phù hợp trong môi trường làm việc chuyên nghiệp.
+Examples of unacceptable behavior include:
 
-## Trách nhiệm thực thi
+* The use of sexualized language or imagery, and sexual attention or advances of any kind
+* Trolling, insulting or derogatory comments, and personal or political attacks
+* Public or private harassment
+* Publishing others' private information, such as a physical or email address, without their explicit permission
+* Other conduct which could reasonably be considered inappropriate in a professional setting
 
-Người duy trì dự án (maintainer) có trách nhiệm làm rõ và thực thi các quy tắc này. Họ có quyền xoá hoặc chỉnh sửa
-bình luận, commit, code, issue và các đóng góp khác vi phạm quy tắc, và sẽ giải thích lý do khi phù hợp.
+## Enforcement Responsibilities
 
-## Phạm vi
+Community leaders are responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any behavior that they deem inappropriate, threatening, offensive, or harmful.
 
-Quy tắc áp dụng trong mọi không gian của dự án (issue, pull request, thảo luận) và khi một người đại diện cho dự án ở nơi công cộng.
+Community leaders have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, and will communicate reasons for moderation decisions when appropriate.
 
-## Báo cáo vi phạm
+## Scope
 
-Báo cáo hành vi vi phạm tới maintainer qua
-[GitHub Security Advisory riêng tư](https://github.com/the-daonm/crypto-quant/security/advisories/new)
-hoặc liên hệ trực tiếp với một maintainer. Mọi báo cáo sẽ được xem xét kịp thời, công bằng và giữ kín danh tính người báo cáo.
+This Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public spaces. Examples of representing our community include using an official e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event.
 
-## Hướng dẫn xử lý
+## Enforcement
 
-1. **Nhắc nhở:** nhắc riêng và giải thích vì sao hành vi không phù hợp.
-2. **Cảnh cáo:** cảnh cáo kèm hậu quả nếu tiếp tục vi phạm.
-3. **Cấm tạm thời:** tạm thời không được tương tác với dự án.
-4. **Cấm vĩnh viễn:** áp dụng với vi phạm nghiêm trọng hoặc lặp lại nhiều lần.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement via a [private GitHub security advisory](https://github.com/the-daonm/crypto-quant/security/advisories/new) or by contacting a maintainer directly. All complaints will be reviewed and investigated promptly and fairly.
 
-## Ghi nguồn
+All community leaders are obligated to respect the privacy and security of the reporter of any incident.
 
-Quy tắc này dựa trên [Contributor Covenant](https://www.contributor-covenant.org/) phiên bản 2.1,
-có tại https://www.contributor-covenant.org/version/2/1/code_of_conduct.html, phát hành theo giấy phép CC BY 4.0.
+## Enforcement Guidelines
+
+Community leaders will follow these Community Impact Guidelines in determining the consequences for any action they deem in violation of this Code of Conduct:
+
+### 1. Correction
+
+**Community Impact**: Use of inappropriate language or other behavior deemed unprofessional or unwelcome in the community.
+
+**Consequence**: A private, written warning from community leaders, providing clarity around the nature of the violation and an explanation of why the behavior was inappropriate. A public apology may be requested.
+
+### 2. Warning
+
+**Community Impact**: A violation through a single incident or series of actions.
+
+**Consequence**: A warning with consequences for continued behavior. No interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, for a specified period of time. This includes avoiding interactions in community spaces as well as external channels like social media. Violating these terms may lead to a temporary or permanent ban.
+
+### 3. Temporary Ban
+
+**Community Impact**: A serious violation of community standards, including sustained inappropriate behavior.
+
+**Consequence**: A temporary ban from any sort of interaction or public communication with the community for a specified period of time. No public or private interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, is allowed during this period. Violating these terms may lead to a permanent ban.
+
+### 4. Permanent Ban
+
+**Community Impact**: Demonstrating a pattern of violation of community standards, including sustained inappropriate behavior, harassment of an individual, or aggression toward or disparagement of classes of individuals.
+
+**Consequence**: A permanent ban from any sort of public interaction within the community.
+
+## Attribution
+
+This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html][v2.1].
+
+Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder][Mozilla CoC].
+
+For answers to common questions about this code of conduct, see the FAQ at [https://www.contributor-covenant.org/faq][FAQ]. Translations are available at [https://www.contributor-covenant.org/translations][translations].
+
+[homepage]: https://www.contributor-covenant.org
+[v2.1]: https://www.contributor-covenant.org/version/2/1/code_of_conduct.html
+[Mozilla CoC]: https://github.com/mozilla/diversity
+[FAQ]: https://www.contributor-covenant.org/faq
+[translations]: https://www.contributor-covenant.org/translations
