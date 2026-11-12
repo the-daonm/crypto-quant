@@ -1,0 +1,29 @@
+[project]
+name = "crypto-quant"
+version = "0.1.0"
+description = "Dự đoán hướng giá crypto bằng ML cổ điển + backtest walk-forward"
+requires-python = ">=3.11"
+dependencies = [
+    "ccxt",
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "lightgbm",
+    "streamlit",
+    "plotly",
+    "pyarrow",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
