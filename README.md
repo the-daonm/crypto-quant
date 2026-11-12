@@ -1,5 +1,6 @@
 # crypto-quant
 
+[![CI](https://github.com/the-daonm/crypto-quant/actions/workflows/ci.yml/badge.svg)](https://github.com/the-daonm/crypto-quant/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-261230.svg)](https://github.com/astral-sh/ruff)
