@@ -3,6 +3,9 @@
 File này dành cho người **chưa biết gì** về tiền ảo, machine learning (ML) hay trading. Đọc lần lượt từ trên xuống,
 mỗi phần dùng kiến thức của các phần trước. Cuối file có **bảng thuật ngữ** và **câu hỏi bảo vệ đồ án hay gặp**.
 
+> Đây là tài liệu tiếng Việt duy nhất của dự án. Code, giao diện, README và các tài liệu khác đều bằng tiếng Anh;
+> khi nhắc tới chúng, file này giữ nguyên tên tiếng Anh để bạn dễ đối chiếu.
+
 **Mục lục**
 
 1. [Bức tranh tổng quát: project này làm gì?](#1-bức-tranh-tổng-quát-project-này-làm-gì)
@@ -570,26 +573,28 @@ source .venv/bin/activate.fish      # hoặc .venv/bin/activate nếu dùng bash
 streamlit run app.py                # mở http://localhost:8501
 ```
 
-**Sidebar (bên trái):**
-- *Cặp coin, Khung thời gian, Mô hình*: chọn thí nghiệm.
-- *Tự chọn ngưỡng*: bật ngưỡng `auto` (mục 11.3).
-- *Ngưỡng xác suất*: tâm của vùng đệm (mặc định 0.5).
-- *Phí*: thử 0% để thấy phí ảnh hưởng thế nào.
-- *Horizon*: 1 = như v1, 3 = v2.
-- *Vùng đệm*: 0 = như v1, 0.05 = v2.
+Giao diện dashboard bằng tiếng Anh; tên tiếng Anh của từng mục được ghi trong ngoặc.
+
+**Sidebar (bên trái, mục *Settings*):**
+- *Pair, Timeframe, Model* (cặp coin, khung thời gian, mô hình): chọn thí nghiệm.
+- *Auto-select threshold on training data*: bật ngưỡng `auto` (mục 11.3).
+- *Probability threshold*: tâm của vùng đệm (mặc định 0.5).
+- *Fee per position change (%)*: thử 0% để thấy phí ảnh hưởng thế nào.
+- *Label horizon (bars)*: 1 = như v1, 3 = v2.
+- *Hysteresis band around threshold* (vùng đệm): 0 = như v1, 0.05 = v2.
 
 **Nội dung chính:**
-- 6 ô chỉ số: lợi nhuận, CAGR, Sharpe, MDD của mô hình (dòng nhỏ bên dưới là của B&H), accuracy, số lệnh.
-- Biểu đồ 3 tầng: giá (nến, thang log) với ▲ vào lệnh / ▼ thoát lệnh; equity so với B&H; drawdown.
-- Bảng so sánh mọi mô hình với cùng cấu hình.
-- Bảng **Design và holdout**.
-- Accuracy từng fold (đường gạch = 50%) và feature importance.
+- 6 ô chỉ số: *Total return, CAGR, Sharpe, Max Drawdown* của mô hình (dòng nhỏ bên dưới là của B&H), *Accuracy*, *Trades* (số lệnh).
+- Biểu đồ 3 tầng: *Price and signals* (nến, thang log, ▲ *Entry* vào lệnh / ▼ *Exit* thoát lệnh); *Equity* so với B&H; *Drawdown*.
+- Bảng *Model comparison*: so sánh mọi mô hình với cùng cấu hình.
+- Bảng *Design vs holdout*.
+- *Accuracy per fold* (đường gạch = 50%) và *Feature importance*.
 
 **Gợi ý demo khi bảo vệ:**
 1. Chọn BTC 4h, đặt horizon = 1, vùng đệm = 0, phí 0%: lãi rất lớn.
 2. Kéo phí lên 0.1%: lỗ gần hết vốn. Đây là "vấn đề".
 3. Đặt horizon = 3, vùng đệm = 0.05: số lệnh giảm mạnh, kết quả dương trở lại. Đây là "giải pháp".
-4. Kéo xuống bảng Design và holdout: cải tiến vẫn giữ được trên dữ liệu chưa thấy.
+4. Kéo xuống bảng *Design vs holdout*: cải tiến vẫn giữ được trên dữ liệu chưa thấy.
 
 ---
 
