@@ -1,5 +1,10 @@
 # crypto-quant
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-261230.svg)](https://github.com/astral-sh/ruff)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 Dự đoán **hướng giá** (tăng/giảm) của BTC, ETH, SOL bằng ML cổ điển, sau đó backtest chiến lược
 long/flat **có tính phí** bằng walk-forward validation và so sánh với Buy & Hold.
 
@@ -106,5 +111,32 @@ app.py         Streamlit dashboard
 notebooks/     EDA và phân tích kết quả
 docs/          GIAI-THICH.md: giải thích kiến thức và project cho người mới
 tests/         pytest
+.github/       template cho issue và PR
 config.yaml    symbols, timeframe, phí, horizon, band, holdout, cửa sổ walk-forward
 ```
+
+## Đóng góp
+
+Mọi đóng góp đều được chào đón. Xem [CONTRIBUTING.md](CONTRIBUTING.md) để biết quy trình (fork → branch → PR → review),
+quy tắc commit và quy tắc phương pháp. Tham gia dự án nghĩa là đồng ý với [Quy tắc ứng xử](CODE_OF_CONDUCT.md).
+Danh sách việc cần làm có ở [Issues](https://github.com/the-daonm/crypto-quant/issues); lịch sử thay đổi ở [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+Phát hành theo [MIT License](LICENSE).
+
+Dự án được xây dựng trên các thư viện mã nguồn mở sau (cảm ơn các tác giả):
+
+| Thư viện | Dùng để | License |
+|---|---|---|
+| [ccxt](https://github.com/ccxt/ccxt) | Lấy dữ liệu từ sàn | MIT |
+| [pandas](https://pandas.pydata.org/) · [NumPy](https://numpy.org/) | Xử lý dữ liệu | BSD-3-Clause |
+| [scikit-learn](https://scikit-learn.org/) | Logistic Regression, metric | BSD-3-Clause |
+| [LightGBM](https://github.com/microsoft/LightGBM) | Gradient boosting | MIT |
+| [Streamlit](https://streamlit.io/) | Dashboard | Apache-2.0 |
+| [Plotly](https://plotly.com/python/) | Biểu đồ | MIT |
+| [PyArrow](https://arrow.apache.org/) | Đọc/ghi parquet | Apache-2.0 |
+| [PyYAML](https://pyyaml.org/) | Đọc config | MIT |
+| [pytest](https://pytest.org/) · [ruff](https://github.com/astral-sh/ruff) | Test, lint | MIT |
+
+Dữ liệu thị trường lấy từ Binance public API và **không** thuộc phạm vi license của repo; repo không phân phối lại dữ liệu.
