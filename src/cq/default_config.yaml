@@ -1,0 +1,15 @@
+exchange: binance          # switch to okx / bybit / kraken if Binance is blocked
+symbols: [BTC/USDT, ETH/USDT, SOL/USDT]
+timeframes: [1d, 4h]
+since: "2019-01-01"
+holdout_start: "2025-01-01"  # data from here on is holdout: never use it for selection
+
+fee: 0.001                 # 0.1% per position change
+threshold: 0.5             # default probability threshold
+band: 0.05                 # hysteresis: enter if p > thr+band, exit if p < thr-band
+horizon: 3                 # label = price direction after `horizon` bars
+
+walk_forward:
+  train_min: {1d: 730, 4h: 4380}   # minimum training bars (~2 years)
+  test_size: {1d: 90, 4h: 540}     # bars per test fold (~3 months)
+  gap: 1                            # embargo between train and test

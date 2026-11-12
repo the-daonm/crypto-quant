@@ -11,7 +11,7 @@ from pathlib import Path
 import ccxt
 import pandas as pd
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+DATA_DIR = Path("data")  # relative to the current working directory, so it also works from an installed wheel
 COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
 
 
