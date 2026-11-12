@@ -6,6 +6,7 @@ Usage: python -m cq.pipeline --symbol BTC/USDT --tf 1d
 from __future__ import annotations
 
 import argparse
+import sys
 from dataclasses import dataclass
 from importlib import resources
 from pathlib import Path
@@ -130,6 +131,12 @@ def run_all(
 
 
 def main(argv: list[str] | None = None) -> None:
+    # The help text and reports contain characters such as "→" that legacy Windows code pages
+    # (e.g. cp1252 when the output is piped) cannot encode; degrade instead of crashing.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
+
     # `--config` is parsed first because the other options take their defaults from the configuration.
     pre = argparse.ArgumentParser(add_help=False)
     pre.add_argument(

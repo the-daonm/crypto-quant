@@ -1,3 +1,5 @@
+import io
+import sys
 from pathlib import Path
 
 import pytest
@@ -50,3 +52,14 @@ def test_data_and_results_default_to_working_directory(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     assert data._cache_path("binance", "BTC/USDT", "1d").resolve().parent == tmp_path / "data"
     assert pipeline.RESULTS_DIR.resolve() == tmp_path / "results"
+
+
+def test_cli_help_survives_a_legacy_output_encoding(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    buffer = io.BytesIO()
+    monkeypatch.setattr(sys, "stdout", io.TextIOWrapper(buffer, encoding="cp1252"))
+    with pytest.raises(SystemExit) as exit_info:
+        pipeline.main(["--help"])
+    sys.stdout.flush()
+    assert exit_info.value.code == 0
+    assert b"--config" in buffer.getvalue()
