@@ -3,9 +3,9 @@
 Thanks for your interest in **crypto-quant**! Contributions of all kinds are welcome: bug fixes, new experiments,
 documentation improvements, reports of results (including negative ones), or simply questions.
 
-By participating you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+By participating you agree to abide by our [Code of Conduct](https://github.com/the-daonm/crypto-quant/blob/main/CODE_OF_CONDUCT.md).
 New to crypto, machine learning or backtesting? A beginner-friendly explainer (in Vietnamese) is available at
-[docs/GIAI-THICH.md](docs/GIAI-THICH.md).
+[docs/GIAI-THICH.md](https://github.com/the-daonm/crypto-quant/blob/main/docs/GIAI-THICH.md).
 
 ## Reporting bugs and proposing changes
 
@@ -93,10 +93,10 @@ This project evaluates trading strategies, so **sound methodology matters more t
 
 ## Releases
 
-The project follows [Semantic Versioning](https://semver.org/) and records changes in [CHANGELOG.md](CHANGELOG.md)
+The project follows [Semantic Versioning](https://semver.org/) and records changes in [CHANGELOG.md](https://github.com/the-daonm/crypto-quant/blob/main/CHANGELOG.md)
 using the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format. PRs with notable changes should add an entry
 under `[Unreleased]`.
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under the project's [MIT License](https://github.com/the-daonm/crypto-quant/blob/main/LICENSE).
