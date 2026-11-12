@@ -104,7 +104,10 @@ hs = cfg.get("holdout_start")
 if hs:
     bts = {m: r[0] for m, r in all_runs.items()}
     cols = ["total_return", "cagr", "sharpe", "max_drawdown", "n_trades"]
-    fmt = {"total_return": "{:.1%}", "cagr": "{:.1%}", "sharpe": "{:.2f}", "max_drawdown": "{:.1%}", "n_trades": "{:,.0f}"}
+    fmt = {
+        "total_return": "{:.1%}", "cagr": "{:.1%}", "sharpe": "{:.2f}",
+        "max_drawdown": "{:.1%}", "n_trades": "{:,.0f}",
+    }
     st.subheader("Design và holdout")
     st.caption(f"Cấu hình mặc định được chọn chỉ dựa trên dữ liệu trước {hs}. "
                "Holdout là dữ liệu chưa từng dùng để chọn cấu hình, nên đây là phép thử trung thực nhất.")

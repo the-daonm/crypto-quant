@@ -50,8 +50,8 @@ def make_model(name: str, seed: int = 42):
 def feature_importance(model, columns) -> dict[str, float] | None:
     if isinstance(model, LGBMClassifier):
         imp = model.booster_.feature_importance(importance_type="gain")
-        return dict(zip(columns, imp / imp.sum()))
+        return dict(zip(columns, imp / imp.sum(), strict=True))
     if hasattr(model, "named_steps") and "logisticregression" in model.named_steps:
         coef = np.abs(model.named_steps["logisticregression"].coef_[0])
-        return dict(zip(columns, coef / coef.sum()))
+        return dict(zip(columns, coef / coef.sum(), strict=True))
     return None
