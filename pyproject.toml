@@ -35,7 +35,7 @@ docs = ["mkdocs-material", "mkdocstrings[python]"]
 [project.urls]
 Homepage = "https://github.com/the-daonm/crypto-quant"
 Issues = "https://github.com/the-daonm/crypto-quant/issues"
-Documentation = "https://github.com/the-daonm/crypto-quant/blob/main/docs/GIAI-THICH.md"
+Documentation = "https://the-daonm.github.io/crypto-quant/"
 
 [build-system]
 requires = ["setuptools>=77"]

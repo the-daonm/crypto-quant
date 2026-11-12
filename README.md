@@ -1,6 +1,7 @@
 # crypto-quant
 
 [![CI](https://github.com/the-daonm/crypto-quant/actions/workflows/ci.yml/badge.svg)](https://github.com/the-daonm/crypto-quant/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://the-daonm.github.io/crypto-quant/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-261230.svg)](https://github.com/astral-sh/ruff)
@@ -10,6 +11,7 @@ Predict the **direction** (up/down) of BTC, ETH and SOL with classical machine l
 **fee-aware** long/flat strategy using walk-forward validation and compare it against Buy & Hold.
 
 > An educational project, not investment advice.
+> Documentation, including the API reference: **https://the-daonm.github.io/crypto-quant/**
 > New to crypto, ML or backtesting? Read **[docs/GIAI-THICH.md](docs/GIAI-THICH.md)** first: a beginner-friendly
 > explainer (in Vietnamese) covering all the background and every part of the project.
 
