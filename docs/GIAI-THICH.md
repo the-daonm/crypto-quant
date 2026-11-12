@@ -22,6 +22,8 @@ mỗi phần dùng kiến thức của các phần trước. Cuối file có **b
 12. [Đi qua từng file của project](#12-đi-qua-từng-file-của-project)
 13. [Từ v1 tới v2: project đã được cải thiện thế nào](#13-từ-v1-tới-v2-project-đã-được-cải-thiện-thế-nào)
 14. [Đọc kết quả và kết luận](#14-đọc-kết-quả-và-kết-luận)
+    - [14.1 Khung 1d và 4h khác nhau thế nào?](#141-khung-1d-và-4h-khác-nhau-thế-nào)
+    - [14.2 Project có dự đoán cho hôm nay không?](#142-project-có-dự-đoán-cho-hôm-nay-không)
 15. [Dùng dashboard](#15-dùng-dashboard)
 16. [Câu hỏi bảo vệ đồ án hay gặp](#16-câu-hỏi-bảo-vệ-đồ-án-hay-gặp)
 17. [Bảng thuật ngữ](#17-bảng-thuật-ngữ)
@@ -564,6 +566,65 @@ Cách đọc bảng:
 - Chưa tính slippage; chưa có short hay đòn bẩy; feature chỉ dựa trên giá và khối lượng.
 - Kết quả quá khứ không đảm bảo tương lai.
 
+### 14.1 Khung 1d và 4h khác nhau thế nào?
+
+Khác nhau ở **độ dài một cây nến**, và mọi thứ khác thay đổi theo:
+
+| | **1d** (nến ngày) | **4h** (nến 4 giờ) |
+|---|---|---|
+| Một nến | 1 ngày, đóng lúc 07:00 sáng giờ VN (00:00 UTC) | 4 giờ, đóng lúc 03, 07, 11, 15, 19, 23h giờ VN |
+| Số lần ra quyết định | 1 lần/ngày | 6 lần/ngày |
+| "3 nến tới" (`horizon = 3`) nghĩa là | **3 ngày** tới | **12 giờ** tới |
+| Dữ liệu từ 2019 | khoảng 2 900 nến | khoảng 17 000 nến (gấp 6) |
+| Nhiễu mỗi nến | Ít hơn | Nhiều hơn: biến động trong vài giờ gần như ngẫu nhiên |
+| Số lệnh (LightGBM v2, khoảng 5 năm) | khoảng 230 | khoảng 900 |
+| Ảnh hưởng của phí | Nhỏ | Lớn, vì giao dịch nhiều gấp vài lần |
+
+Trong kết quả của project:
+- **4h** có accuracy cao hơn một chút (khoảng 54% so với 51–52%), vì có nhiều dữ liệu hơn để học và có những quy luật ngắn hạn.
+  Đổi lại nó giao dịch rất nhiều, nên ở v1 phí làm mất gần hết vốn. Phải có vùng đệm ở v2 thì 4h mới có lãi sau phí.
+- **1d** ít nhiễu và ít lệnh nên ít bị phí "ăn", nhưng tín hiệu yếu hơn và có ít dữ liệu để học hơn.
+
+Với cùng một coin, hai khung có thể cho **kết luận khác nhau cùng lúc** (ví dụ ETH 1d đang đứng ngoài, còn ETH 4h đang giữ coin),
+vì hai mô hình trả lời hai câu hỏi khác nhau: "3 ngày tới" và "12 giờ tới". Project chạy cả hai khung để thấy rõ đánh đổi giữa
+*nhiều tín hiệu nhưng tốn phí* và *ít tín hiệu nhưng rẻ*.
+
+### 14.2 Project có dự đoán cho hôm nay không?
+
+**Phần đã làm (backtest) chỉ kiểm tra quá khứ**: giả lập "nếu 2021–2026 giao dịch theo mô hình thì kết quả ra sao".
+Đây là bước bắt buộc phải làm trước. Mô hình nào train xong cũng *đưa ra được* một con số dự đoán, nhưng nếu chưa kiểm tra trên
+quá khứ thì không biết con số đó đáng tin đến đâu.
+
+Về kỹ thuật, dự đoán cho hiện tại chỉ cần dùng lại các thành phần đã có:
+
+1. Tải dữ liệu mới nhất, tới nến **vừa đóng cửa** (`load_ohlcv(..., refresh=True)`).
+2. Tính feature (`build_features`) và tạo bộ dữ liệu có nhãn từ toàn bộ lịch sử (`make_dataset`). 3 nến cuối chưa có nhãn nên tự động bị bỏ khi train.
+3. Train mô hình trên **toàn bộ** lịch sử có nhãn.
+4. Dự đoán xác suất cho nến mới nhất, rồi áp dụng quy tắc vùng đệm (`positions`) với trạng thái hôm trước để ra quyết định.
+
+Ví dụ một lần chạy thử (12/11/2026, 17:33 giờ VN, LightGBM v2):
+
+| Cặp | Khung | P(tăng sau 3 nến) | Vùng | Quyết định |
+|---|---|---:|---|---|
+| BTC/USDT | 1d | 0.507 | vùng đệm → giữ nguyên | giữ coin |
+| ETH/USDT | 1d | 0.532 | vùng đệm → giữ nguyên | đứng ngoài |
+| SOL/USDT | 1d | 0.466 | vùng đệm → giữ nguyên | đứng ngoài |
+| BTC/USDT | 4h | 0.580 | > 0.55 → mua | giữ coin |
+| ETH/USDT | 4h | 0.544 | vùng đệm → giữ nguyên | giữ coin |
+| SOL/USDT | 4h | 0.510 | vùng đệm → giữ nguyên | đứng ngoài |
+
+Cách đọc bảng:
+- Phần lớn xác suất nằm sát 0.5, tức mô hình cũng "không chắc lắm". Điều này khớp với kết luận "có tín hiệu nhưng yếu".
+- ETH 1d có P = 0.532 (> 0.5) nhưng vẫn đứng ngoài, vì 0.532 chưa vượt 0.55. Vùng đệm yêu cầu mô hình đủ tự tin mới đổi vị thế.
+- Đây chỉ là minh hoạ, **không phải lời khuyên đầu tư**.
+
+Để đánh giá dự đoán cho hiện tại một cách nghiêm túc, phải **ghi lại mỗi ngày rồi đối chiếu về sau**. Việc này gọi là
+**paper trading** (giao dịch trên giấy, không dùng tiền thật), là issue #10 của project. Paper trading là phép thử trung thực nhất,
+vì dữ liệu tương lai lúc dự đoán **chưa tồn tại**, nên không thể leakage hay chọn cấu hình theo kết quả.
+
+Một bài học từ lần chạy thử: lần đầu, Binance bị **timeout** giữa chừng. Script chạy tự động hằng ngày phải xử lý lỗi mạng
+(thử lại, dùng tạm cache và đánh dấu trong log), nếu không sẽ có ngày bị thiếu dữ liệu mà không ai biết.
+
 ---
 
 ## 15. Dùng dashboard
@@ -623,6 +684,14 @@ Giá trị nằm ở việc quản lý rủi ro. Kết luận trung thực này 
 **Hỏi: Dữ liệu lấy từ đâu, có hợp pháp không?**
 Đáp: Binance public market-data API qua ccxt, dữ liệu giá công khai, không có thông tin cá nhân, dùng cho mục đích học tập,
 có ghi nguồn, không phân phối lại dữ liệu thô (repo không chứa dữ liệu).
+
+**Hỏi: Mô hình có dự đoán được giá hôm nay/ngày mai không, hay chỉ phân tích quá khứ?**
+Đáp: Backtest là bước chứng minh trên quá khứ. Mô hình hoàn toàn đưa ra được dự đoán cho nến kế tiếp (mục 14.2), và nhóm chạy
+paper trading hằng ngày (#10) để kiểm tra dự đoán trên dữ liệu chưa tồn tại lúc dự đoán. Có thể demo trực tiếp bằng log paper trading.
+
+**Hỏi: Sao dùng cả 1d và 4h? Khung nào tốt hơn?**
+Đáp: Hai khung cho thấy đánh đổi giữa số tín hiệu và chi phí (mục 14.1). 4h có accuracy cao hơn nhưng tốn phí hơn nhiều; 1d ít lệnh
+hơn nhưng tín hiệu yếu hơn. Không có khung "tốt hơn" tuyệt đối; tuỳ phí giao dịch và mục tiêu rủi ro.
 
 **Hỏi: Nếu dùng thật thì cần thêm gì?**
 Đáp: Tính slippage, kiểm tra trên nhiều coin/thị trường hơn, paper trading một thời gian, quản lý vốn (position sizing),
