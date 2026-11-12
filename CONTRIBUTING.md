@@ -38,7 +38,8 @@ pytest                                                         # should pass bef
 
 ## Workflow
 
-All changes, including the maintainers' own, go through **pull requests from forks**.
+All changes go through **pull requests**; `main` is protected and cannot be pushed to directly.
+Contributors open PRs from their forks. Maintainers may push branches to the main repository instead of a fork.
 
 1. Sync your fork before starting:
    ```bash
@@ -58,7 +59,8 @@ All changes, including the maintainers' own, go through **pull requests from for
 5. If `main` moves on while you work, update your branch: `git fetch upstream && git rebase upstream/main`, then `git push --force-with-lease`.
 6. Every PR needs **at least one review** (approval or comments) from a team member other than the author, and CI must pass.
    Reviewers should run the code, not just read it. Anyone can review a PR on this public repository.
-7. A maintainer merges the PR, preferably with **squash merge**; the squashed commit keeps the PR author as its author.
+7. A maintainer merges the PR: **squash merge** when the PR has a single purpose, **rebase merge** when it contains several
+   single-purpose commits. Either way the PR author stays the commit author.
 
 ## Commit guidelines
 
