@@ -45,3 +45,16 @@ def test_make_dataset_aligns_and_drops_nan():
     assert not X.isna().any().any()
     assert X.index[-1] < df.index[-1]       # nến cuối không có nhãn
     assert ((fwd > 0).astype(int) == y).all()
+
+
+def test_multi_bar_label_and_dataset():
+    close = pd.Series([1.0, 2.0, 1.5, 1.2, 3.0])
+    y = direction_label(close, horizon=2)
+    assert y.tolist()[:3] == [1.0, 0.0, 1.0]
+    assert y.iloc[-2:].isna().all()
+
+    df = _synthetic_ohlcv()
+    X, y, fwd = make_dataset(build_features(df), df["close"], horizon=3)
+    assert X.index[-1] == df.index[-4]           # 3 nến cuối chưa có nhãn
+    expected = np.log(df["close"]).diff().shift(-1).reindex(fwd.index)
+    np.testing.assert_allclose(fwd, expected)     # backtest vẫn dùng return 1 nến
