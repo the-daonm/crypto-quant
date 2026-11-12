@@ -1,0 +1,34 @@
+name: 🧪 Thí nghiệm
+description: Thử một ý tưởng mới cho mô hình hoặc chiến lược (feature, model, sizing, …)
+labels: ["experiment"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Giả thuyết
+      description: Bạn kỳ vọng điều gì, và vì sao (lý do kinh tế hoặc thống kê)?
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Thiết kế thí nghiệm
+      description: Biến thể nào được so sánh với cấu hình hiện tại? Coin, khung thời gian, chỉ số đánh giá?
+    validations:
+      required: true
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Cam kết phương pháp
+      options:
+        - label: Chỉ dùng giai đoạn design (trước `holdout_start`) để đánh giá và chọn cấu hình
+          required: true
+        - label: Báo cáo kết quả sau phí và so sánh với Buy & Hold
+          required: true
+        - label: Ghi lại số cấu hình đã thử
+          required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Kết quả (điền khi xong)
+      description: Bảng hoặc biểu đồ và nhận xét. Kết quả âm tính cũng có giá trị.

@@ -1,0 +1,25 @@
+name: ✨ Đề xuất tính năng
+description: Tính năng mới cho code, dashboard hoặc tài liệu
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Vấn đề hoặc nhu cầu
+      description: Tính năng này giải quyết vấn đề gì?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Đề xuất
+      description: Bạn muốn nó hoạt động thế nào? Ảnh hưởng tới file hoặc module nào?
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Tiêu chí hoàn thành
+      placeholder: |
+        - [ ] ...
+        - [ ] Có test
