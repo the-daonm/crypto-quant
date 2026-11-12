@@ -49,7 +49,7 @@ def test_max_drawdown():
 
 def test_trading_metrics_flat_returns():
     m = trading_metrics(pd.Series(np.zeros(365)), 365)
-    assert m["total_return"] == 0 and m["max_drawdown"] == 0
+    assert m["total_return"] == 1  # deliberately broken to verify CI blocks merging
 
 
 def test_hysteresis_holds_position_inside_band():
