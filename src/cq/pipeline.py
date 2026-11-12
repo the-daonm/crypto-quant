@@ -79,6 +79,25 @@ def buy_and_hold_metrics(bt: pd.DataFrame, timeframe: str) -> dict:
     return {"model": "buy_and_hold", **trading_metrics(bt["bh_ret"], PERIODS_PER_YEAR[timeframe])}
 
 
+def period_summary(exps: dict[str, Experiment], timeframe: str, start=None, end=None) -> pd.DataFrame:
+    """Metric trading của từng model trên một khoảng thời gian [start, end)."""
+    ppy = PERIODS_PER_YEAR[timeframe]
+    rows = []
+    for name, e in exps.items():
+        bt = e.bt
+        mask = pd.Series(True, index=bt.index)
+        if start is not None:
+            mask &= bt.index >= pd.Timestamp(start, tz="UTC")
+        if end is not None:
+            mask &= bt.index < pd.Timestamp(end, tz="UTC")
+        b = bt[mask]
+        if not rows:
+            rows.append({"model": "buy_and_hold", **trading_metrics(b["bh_ret"], ppy)})
+        # Phí vào lệnh lần đầu nếu khoảng thời gian bắt đầu khi đang giữ vị thế: bỏ qua cho đơn giản.
+        rows.append({"model": name, **trading_metrics(b["strat_ret"], ppy, b["trades"], b["position"])})
+    return pd.DataFrame(rows).set_index("model")
+
+
 def run_all(symbol: str, timeframe: str, cfg: dict, threshold=None, fee=None, horizon=None, band=None,
             models=MODEL_NAMES, refresh=False) -> tuple[pd.DataFrame, dict[str, Experiment]]:
     ohlcv = load_ohlcv(symbol, timeframe, cfg["since"], cfg["exchange"], refresh=refresh)
@@ -106,10 +125,19 @@ def main() -> None:
 
     summary, exps = run_all(args.symbol, args.tf, cfg, thr, args.fee, args.horizon, args.band, refresh=args.refresh)
     start, end = next(iter(exps.values())).bt.index[[0, -1]]
-    print(f"\n{args.symbol} {args.tf} | out-of-sample {start.date()} → {end.date()} "
-          f"| threshold={thr if thr is not None else cfg['threshold']} fee={args.fee or cfg['fee']}\n")
+    used = {k: v if v is not None else cfg.get(k) for k, v in
+            {"threshold": thr, "band": args.band, "horizon": args.horizon, "fee": args.fee}.items()}
+    print(f"\n{args.symbol} {args.tf} | out-of-sample {start.date()} → {end.date()} | "
+          + " ".join(f"{k}={v}" for k, v in used.items()) + "\n")
+    cols = ["total_return", "cagr", "sharpe", "max_drawdown", "n_trades"]
     with pd.option_context("display.float_format", "{:,.3f}".format, "display.width", 200, "display.max_columns", None):
         print(summary)
+        hs = cfg.get("holdout_start")
+        if hs:
+            print(f"\n— Giai đoạn design (< {hs}): dùng để chọn cấu hình —")
+            print(period_summary(exps, args.tf, end=hs)[cols])
+            print(f"\n— Giai đoạn holdout (>= {hs}): không dùng khi chọn cấu hình —")
+            print(period_summary(exps, args.tf, start=hs)[cols])
 
     RESULTS_DIR.mkdir(exist_ok=True)
     tag = f"{args.symbol.replace('/', '-')}_{args.tf}"

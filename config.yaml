@@ -2,6 +2,7 @@ exchange: binance          # đổi sang okx / bybit nếu Binance bị chặn
 symbols: [BTC/USDT, ETH/USDT, SOL/USDT]
 timeframes: [1d, 4h]
 since: "2019-01-01"
+holdout_start: "2025-01-01"  # sau mốc này là holdout: không dùng để chọn cấu hình/tham số
 
 fee: 0.001                 # 0.1% mỗi lần đổi vị thế
 threshold: 0.5             # ngưỡng xác suất mặc định để vào lệnh
