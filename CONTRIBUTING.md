@@ -13,11 +13,24 @@ New to crypto, machine learning or backtesting? A beginner-friendly explainer (i
 - Otherwise open a new issue using one of the templates: **Bug report**, **Feature request** or **Experiment**.
 - Issues labelled [`good first issue`](https://github.com/the-daonm/crypto-quant/labels/good%20first%20issue) are a good place to start.
 
+## Picking up an issue
+
+Tasks are not pre-assigned: pick what interests you. Issues are grouped by `area:` labels
+(`area: data`, `area: models`, `area: strategy`, `area: docs`, `area: infra`).
+
+1. Find an **unassigned** issue and comment *"I'll take this"*. A maintainer will assign it to you.
+2. Work on at most **two** assigned issues at a time, so tasks are not blocked.
+3. Open a **draft pull request** early and link the issue (`Closes #N`), so others can see progress.
+4. If you stop working on an issue, say so in a comment. Issues with no activity for a week may be unassigned.
+
 ## Development setup
 
+First **fork** the repository on GitHub (button *Fork* at the top right), then:
+
 ```bash
-git clone https://github.com/<your-username>/crypto-quant.git   # after forking
+git clone https://github.com/<your-username>/crypto-quant.git
 cd crypto-quant
+git remote add upstream https://github.com/the-daonm/crypto-quant.git
 python -m venv .venv && source .venv/bin/activate              # fish: source .venv/bin/activate.fish
 pip install -e ".[dev,notebook]"
 pytest                                                         # should pass before you start
@@ -25,17 +38,27 @@ pytest                                                         # should pass bef
 
 ## Workflow
 
-1. **Fork** the repository (team members with write access may branch directly).
+All changes, including the maintainers' own, go through **pull requests from forks**.
+
+1. Sync your fork before starting:
+   ```bash
+   git checkout main
+   git fetch upstream
+   git merge --ff-only upstream/main
+   git push origin main
+   ```
 2. Create a branch from `main` with a descriptive name: `feat/funding-rate`, `fix/backtest-fee`, `docs/sharpe`, `exp/ablation`.
 3. Make your changes, add tests, and run the checks:
    ```bash
    ruff check . && ruff format --check .
    pytest
    ```
-4. Commit (see the rules below), push, and open a **pull request** against `main` using the template.
-5. Every PR needs **at least one approving review** from someone other than the author, and CI must pass.
-   Reviewers should run the code, not just read it.
-6. Prefer **squash** or **rebase** merges to keep the history of `main` linear.
+4. Commit (see the rules below), push the branch **to your fork** (`git push origin <branch>`), and open a
+   **pull request** from your fork against `the-daonm/crypto-quant:main` using the template.
+5. If `main` moves on while you work, update your branch: `git fetch upstream && git rebase upstream/main`, then `git push --force-with-lease`.
+6. Every PR needs **at least one review** (approval or comments) from a team member other than the author, and CI must pass.
+   Reviewers should run the code, not just read it. Anyone can review a PR on this public repository.
+7. A maintainer merges the PR, preferably with **squash merge**; the squashed commit keeps the PR author as its author.
 
 ## Commit guidelines
 
