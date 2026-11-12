@@ -1,36 +1,41 @@
 # Changelog
 
-Mọi thay đổi đáng kể của dự án được ghi ở đây.
-Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
+All notable changes to this project are documented in this file.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
+[Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
 ### Added
-- MIT License, hướng dẫn đóng góp (`CONTRIBUTING.md`), quy tắc ứng xử (`CODE_OF_CONDUCT.md`).
-- Template cho issue (báo lỗi, đề xuất, thí nghiệm) và pull request.
-- Metadata dự án trong `pyproject.toml` (license, URL, keywords).
-- Lint và format bằng `ruff`.
+- MIT License, contributing guide (`CONTRIBUTING.md`) and Code of Conduct (Contributor Covenant 2.1).
+- Issue templates (bug report, feature request, experiment) and a pull request template.
+- Project metadata in `pyproject.toml` (license, URLs, keywords, classifiers).
+- Linting and formatting with `ruff`.
+
+### Changed
+- Code, dashboard, notebook and project documentation are now in English;
+  the beginner explainer `docs/GIAI-THICH.md` remains in Vietnamese.
 
 ## [0.2.0] - 2026-11-12
 
 ### Added
-- Nhãn nhìn nhiều nến (`horizon`), kèm embargo tương ứng trong walk-forward.
-- Tín hiệu có vùng đệm (hysteresis, `band`) để giảm số lệnh.
-- Báo cáo tách riêng giai đoạn design và holdout (`holdout_start`) trong CLI, dashboard và notebook.
-- `docs/GIAI-THICH.md`: tài liệu giải thích kiến thức cho người mới.
+- Multi-bar labels (`horizon`) with a matching embargo in walk-forward validation.
+- Hysteresis band (`band`) on entry/exit signals to reduce trading.
+- Separate design and holdout (`holdout_start`) reporting in the CLI, dashboard and notebook.
+- `docs/GIAI-THICH.md`: beginner explainer (Vietnamese).
 
 ### Changed
-- Cấu hình mặc định: `horizon = 3`, `band = 0.05`. Trên holdout 2025–2026, Sharpe trung bình của LightGBM
-  tăng từ -1.28 lên +0.10.
+- Default configuration is now `horizon = 3`, `band = 0.05`. On the 2025–2026 holdout, the average LightGBM
+  Sharpe ratio improved from −1.28 to +0.10.
 
 ## [0.1.0] - 2026-11-12
 
 ### Added
-- Tải dữ liệu OHLCV từ Binance qua ccxt, có cache parquet.
-- 21 feature kỹ thuật causal, nhãn hướng giá nến kế tiếp.
-- Mô hình baseline, Logistic Regression, LightGBM; walk-forward validation; ngưỡng `auto`.
-- Backtest long/flat có phí; metric phân loại và metric giao dịch.
-- CLI `python -m cq.pipeline`, dashboard Streamlit, notebook EDA.
+- OHLCV download from Binance via ccxt with a parquet cache.
+- 21 causal technical features and next-bar direction labels.
+- Baseline, Logistic Regression and LightGBM models; walk-forward validation; `auto` threshold selection.
+- Fee-aware long/flat backtest; classification and trading metrics.
+- `python -m cq.pipeline` CLI, Streamlit dashboard and EDA notebook.
 
 [Unreleased]: https://github.com/the-daonm/crypto-quant/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/the-daonm/crypto-quant/compare/v0.1.0...v0.2.0
