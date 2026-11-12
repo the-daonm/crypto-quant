@@ -2,7 +2,19 @@
 name = "crypto-quant"
 version = "0.1.0"
 description = "Dự đoán hướng giá crypto bằng ML cổ điển + backtest walk-forward"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
+keywords = ["crypto", "quant", "machine-learning", "backtesting", "walk-forward", "lightgbm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "ccxt",
     "pandas",
@@ -19,8 +31,13 @@ dependencies = [
 dev = ["pytest"]
 notebook = ["jupyter", "matplotlib", "tabulate"]
 
+[project.urls]
+Homepage = "https://github.com/the-daonm/crypto-quant"
+Issues = "https://github.com/the-daonm/crypto-quant/issues"
+Documentation = "https://github.com/the-daonm/crypto-quant/blob/main/docs/GIAI-THICH.md"
+
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
