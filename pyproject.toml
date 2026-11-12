@@ -1,6 +1,6 @@
 [project]
 name = "crypto-quant"
-version = "0.1.0"
+version = "0.2.0"
 description = "Crypto price-direction prediction with classical ML and fee-aware walk-forward backtesting"
 readme = "README.md"
 license = "MIT"
