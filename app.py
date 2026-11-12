@@ -181,7 +181,7 @@ with left:
 with right:
     st.subheader("Feature importance")
     if importance is None:
-        st.info("The baseline has no feature importance.")
+        st.info(f"The {model} model has no feature importance.")
     else:
         top = importance.head(15)[::-1]
         fi = go.Figure(go.Bar(x=top.values, y=top.index, orientation="h", marker_color="#2563eb"))

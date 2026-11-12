@@ -21,6 +21,7 @@ dependencies = [
     "numpy",
     "scikit-learn",
     "lightgbm",
+    "xgboost",
     "streamlit",
     "plotly",
     "pyarrow",
