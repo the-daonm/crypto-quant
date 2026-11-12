@@ -1,26 +1,26 @@
-## Mô tả
+## Summary
 
-<!-- PR này làm gì, và vì sao? -->
+<!-- What does this PR change, and why? -->
 
 Closes #
 
-## Loại thay đổi
+## Type of change
 
-- [ ] Sửa lỗi
-- [ ] Tính năng mới
-- [ ] Thí nghiệm (kết quả ở phần dưới)
-- [ ] Tài liệu
-- [ ] Refactor / hạ tầng
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Experiment (results below)
+- [ ] Documentation
+- [ ] Refactoring / infrastructure
 
 ## Checklist
 
-- [ ] `ruff check .` và `ruff format --check .` pass
-- [ ] `pytest` pass; code mới có test (không gọi mạng)
-- [ ] Mỗi commit chỉ làm một việc
-- [ ] Không dùng giai đoạn holdout để chọn cấu hình
-- [ ] Cập nhật `CHANGELOG.md` (mục `[Unreleased]`) nếu có thay đổi đáng kể
-- [ ] Cập nhật tài liệu (README / `docs/`) nếu cần
+- [ ] `ruff check .` and `ruff format --check .` pass
+- [ ] `pytest` passes; new code is covered by tests (no network access)
+- [ ] Each commit has a single purpose
+- [ ] The holdout period was not used for any selection
+- [ ] `CHANGELOG.md` updated under `[Unreleased]` for notable changes
+- [ ] Documentation updated (README / `docs/`) if needed
 
-## Kết quả (nếu là thí nghiệm)
+## Results (experiments only)
 
-<!-- Bảng design: Sharpe, Max DD, số lệnh, so với Buy & Hold; số cấu hình đã thử -->
+<!-- Design-period table: Sharpe, max drawdown, trades vs Buy & Hold; number of configurations tried -->

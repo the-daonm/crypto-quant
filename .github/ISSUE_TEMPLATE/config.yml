@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: 📖 Giải thích kiến thức cho người mới
+  - name: 📖 Beginner explainer (Vietnamese)
     url: https://github.com/the-daonm/crypto-quant/blob/main/docs/GIAI-THICH.md
-    about: Đọc trước khi hỏi về crypto, ML hay backtest
+    about: Background on crypto, machine learning and backtesting

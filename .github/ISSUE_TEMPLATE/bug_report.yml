@@ -1,19 +1,19 @@
-name: 🐛 Báo lỗi
-description: Code chạy sai, crash hoặc kết quả không hợp lý
+name: 🐛 Bug report
+description: Something crashes, behaves incorrectly, or produces implausible results
 labels: ["bug"]
 body:
   - type: textarea
     id: what
     attributes:
-      label: Mô tả lỗi
-      description: Chuyện gì xảy ra, và bạn mong đợi điều gì?
+      label: Description
+      description: What happened, and what did you expect to happen?
     validations:
       required: true
   - type: textarea
     id: repro
     attributes:
-      label: Cách tái hiện
-      description: Lệnh đã chạy, cấu hình (`config.yaml`), coin hoặc khung thời gian.
+      label: Steps to reproduce
+      description: Command you ran, configuration (`config.yaml`), pair and timeframe.
       placeholder: |
         python -m cq.pipeline --symbol BTC/USDT --tf 4h --band 0.05
     validations:
@@ -21,10 +21,10 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Log hoặc thông báo lỗi
+      label: Logs or error output
       render: shell
   - type: input
     id: env
     attributes:
-      label: Môi trường
-      placeholder: "OS, phiên bản Python, commit hash (git rev-parse --short HEAD)"
+      label: Environment
+      placeholder: "OS, Python version, commit hash (git rev-parse --short HEAD)"

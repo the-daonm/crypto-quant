@@ -1,34 +1,34 @@
-name: 🧪 Thí nghiệm
-description: Thử một ý tưởng mới cho mô hình hoặc chiến lược (feature, model, sizing, …)
+name: 🧪 Experiment
+description: Test a new idea for the model or strategy (features, models, sizing, …)
 labels: ["experiment"]
 body:
   - type: textarea
     id: hypothesis
     attributes:
-      label: Giả thuyết
-      description: Bạn kỳ vọng điều gì, và vì sao (lý do kinh tế hoặc thống kê)?
+      label: Hypothesis
+      description: What do you expect, and why (economic or statistical rationale)?
     validations:
       required: true
   - type: textarea
     id: design
     attributes:
-      label: Thiết kế thí nghiệm
-      description: Biến thể nào được so sánh với cấu hình hiện tại? Coin, khung thời gian, chỉ số đánh giá?
+      label: Experiment design
+      description: Which variants are compared against the current configuration? Pairs, timeframes, metrics?
     validations:
       required: true
   - type: checkboxes
     id: rules
     attributes:
-      label: Cam kết phương pháp
+      label: Methodology checklist
       options:
-        - label: Chỉ dùng giai đoạn design (trước `holdout_start`) để đánh giá và chọn cấu hình
+        - label: Evaluate and select using the design period only (before `holdout_start`)
           required: true
-        - label: Báo cáo kết quả sau phí và so sánh với Buy & Hold
+        - label: Report results after fees and compare against Buy & Hold
           required: true
-        - label: Ghi lại số cấu hình đã thử
+        - label: Record the number of configurations tried
           required: true
   - type: textarea
     id: result
     attributes:
-      label: Kết quả (điền khi xong)
-      description: Bảng hoặc biểu đồ và nhận xét. Kết quả âm tính cũng có giá trị.
+      label: Results (fill in when done)
+      description: Tables or charts with commentary. Negative results are valuable too.
