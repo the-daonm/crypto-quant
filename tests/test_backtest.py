@@ -50,3 +50,17 @@ def test_max_drawdown():
 def test_trading_metrics_flat_returns():
     m = trading_metrics(pd.Series(np.zeros(365)), 365)
     assert m["total_return"] == 0 and m["max_drawdown"] == 0
+
+
+def test_hysteresis_holds_position_inside_band():
+    from cq.backtest import positions
+    idx = pd.date_range("2021-01-01", periods=6, freq="D", tz="UTC")
+    proba = pd.Series([0.52, 0.56, 0.52, 0.48, 0.44, 0.50], index=idx)
+    assert positions(proba, 0.5, band=0.05).tolist() == [0, 1, 1, 1, 0, 0]
+    assert positions(proba, 0.5, band=0.0).tolist() == [1, 1, 1, 0, 0, 0]
+
+
+def test_band_reduces_trades(fwd):
+    rng = np.random.default_rng(2)
+    proba = pd.Series(0.5 + rng.normal(0, 0.04, len(fwd)), index=fwd.index)
+    assert backtest(proba, fwd, band=0.05)["trades"].sum() < backtest(proba, fwd, band=0.0)["trades"].sum()

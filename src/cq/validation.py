@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+from cq.backtest import positions
 from cq.models import feature_importance, make_model
 
 THRESHOLD_GRID = np.round(np.arange(0.45, 0.61, 0.01), 2)
@@ -21,21 +22,21 @@ def walk_forward_splits(n: int, train_min: int, test_size: int, gap: int = 1):
         start = end
 
 
-def _sharpe_long_flat(proba, fwd, thr, fee):
-    pos = (proba > thr).astype(float)
+def _sharpe_long_flat(proba, fwd, thr, fee, band=0.0):
+    pos = positions(pd.Series(proba), thr, band).to_numpy()
     trades = np.abs(np.diff(pos, prepend=0.0))
     pnl = pos * fwd - trades * fee
     sd = pnl.std()
     return pnl.mean() / sd if sd > 0 else -np.inf
 
 
-def choose_threshold(model_name, X, y, fwd, fee, val_frac=0.25):
+def choose_threshold(model_name, X, y, fwd, fee, band=0.0, val_frac=0.25):
     """Tách đuôi tập train làm validation, chọn ngưỡng có Sharpe cao nhất trên đó."""
     cut = int(len(X) * (1 - val_frac))
     m = make_model(model_name).fit(X.iloc[:cut], y.iloc[:cut])
     proba = m.predict_proba(X.iloc[cut:])[:, 1]
     f = fwd.iloc[cut:].to_numpy()
-    scores = [_sharpe_long_flat(proba, f, t, fee) for t in THRESHOLD_GRID]
+    scores = [_sharpe_long_flat(proba, f, t, fee, band) for t in THRESHOLD_GRID]
     return float(THRESHOLD_GRID[int(np.argmax(scores))])
 
 
@@ -56,6 +57,7 @@ def run_walk_forward(
     gap: int = 1,
     threshold: float | str = 0.5,
     fee: float = 0.001,
+    band: float = 0.0,
 ) -> WalkForwardResult:
     """Huấn luyện lại ở mỗi fold, chỉ dự đoán trên phần test (out-of-sample).
 
@@ -68,7 +70,7 @@ def run_walk_forward(
         proba = model.predict_proba(X.iloc[te])[:, 1]
 
         thr = (
-            choose_threshold(model_name, Xtr, ytr, fwd.iloc[tr], fee)
+            choose_threshold(model_name, Xtr, ytr, fwd.iloc[tr], fee, band)
             if threshold == "auto"
             else float(threshold)
         )

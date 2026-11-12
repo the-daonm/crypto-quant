@@ -45,10 +45,12 @@ def run_experiment(
     threshold: float | str | None = None,
     fee: float | None = None,
     horizon: int | None = None,
+    band: float | None = None,
 ) -> Experiment:
     fee = cfg["fee"] if fee is None else fee
     threshold = cfg["threshold"] if threshold is None else threshold
     horizon = cfg.get("horizon", 1) if horizon is None else horizon
+    band = cfg.get("band", 0.0) if band is None else band
     wf_cfg = cfg["walk_forward"]
 
     X, y, fwd = make_dataset(build_features(ohlcv), ohlcv["close"], horizon=horizon)
@@ -59,9 +61,10 @@ def run_experiment(
         gap=max(wf_cfg["gap"], horizon),   # nhãn chồng lấn `horizon` nến → embargo tương ứng
         threshold=threshold,
         fee=fee,
+        band=band,
     )
     p = wf.predictions
-    bt = backtest(p["proba"], p["fwd_ret"], threshold=p["threshold"], fee=fee)
+    bt = backtest(p["proba"], p["fwd_ret"], threshold=p["threshold"], fee=fee, band=band)
 
     ppy = PERIODS_PER_YEAR[timeframe]
     metrics = {
@@ -76,10 +79,10 @@ def buy_and_hold_metrics(bt: pd.DataFrame, timeframe: str) -> dict:
     return {"model": "buy_and_hold", **trading_metrics(bt["bh_ret"], PERIODS_PER_YEAR[timeframe])}
 
 
-def run_all(symbol: str, timeframe: str, cfg: dict, threshold=None, fee=None, horizon=None,
+def run_all(symbol: str, timeframe: str, cfg: dict, threshold=None, fee=None, horizon=None, band=None,
             models=MODEL_NAMES, refresh=False) -> tuple[pd.DataFrame, dict[str, Experiment]]:
     ohlcv = load_ohlcv(symbol, timeframe, cfg["since"], cfg["exchange"], refresh=refresh)
-    exps = {m: run_experiment(ohlcv, timeframe, m, cfg, threshold, fee, horizon) for m in models}
+    exps = {m: run_experiment(ohlcv, timeframe, m, cfg, threshold, fee, horizon, band) for m in models}
     any_bt = next(iter(exps.values())).bt
     rows = [buy_and_hold_metrics(any_bt, timeframe)] + [e.metrics for e in exps.values()]
     return pd.DataFrame(rows).set_index("model"), exps
@@ -92,6 +95,7 @@ def main() -> None:
     ap.add_argument("--tf", default=cfg["timeframes"][0], choices=list(PERIODS_PER_YEAR))
     ap.add_argument("--threshold", default=None, help="số (vd 0.55) hoặc 'auto'")
     ap.add_argument("--fee", type=float, default=None)
+    ap.add_argument("--band", type=float, default=None, help="vùng đệm quanh ngưỡng (hysteresis)")
     ap.add_argument("--horizon", type=int, default=None, help="số nến tương lai dùng để tạo nhãn")
     ap.add_argument("--refresh", action="store_true", help="tải lại dữ liệu, bỏ qua cache")
     args = ap.parse_args()
@@ -100,7 +104,7 @@ def main() -> None:
     if thr is not None and thr != "auto":
         thr = float(thr)
 
-    summary, exps = run_all(args.symbol, args.tf, cfg, thr, args.fee, args.horizon, refresh=args.refresh)
+    summary, exps = run_all(args.symbol, args.tf, cfg, thr, args.fee, args.horizon, args.band, refresh=args.refresh)
     start, end = next(iter(exps.values())).bt.index[[0, -1]]
     print(f"\n{args.symbol} {args.tf} | out-of-sample {start.date()} → {end.date()} "
           f"| threshold={thr if thr is not None else cfg['threshold']} fee={args.fee or cfg['fee']}\n")
