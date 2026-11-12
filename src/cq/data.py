@@ -1,7 +1,7 @@
-"""Tải dữ liệu OHLCV công khai qua ccxt và cache ra parquet.
+"""Download public OHLCV data via ccxt and cache it as parquet.
 
-Nguồn: public market-data API của sàn (mặc định Binance), không cần API key.
-Chỉ dùng cho mục đích học tập; không phân phối lại dữ liệu thô.
+Source: the exchange's public market-data API (Binance by default); no API key needed.
+For educational use only; raw data is not redistributed.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ def fetch_ohlcv(
     exchange: str = "binance",
     limit: int = 1000,
 ) -> pd.DataFrame:
-    """Tải toàn bộ nến từ `since` tới hiện tại, phân trang theo `limit`."""
+    """Download every bar from `since` until now, paginating `limit` bars at a time."""
     ex = getattr(ccxt, exchange)({"enableRateLimit": True})
     cursor = ex.parse8601(f"{since}T00:00:00Z")
     tf_ms = ex.parse_timeframe(timeframe) * 1000
@@ -43,7 +43,7 @@ def fetch_ohlcv(
     df = pd.DataFrame(rows, columns=COLUMNS).drop_duplicates("timestamp")
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True)
     df = df.set_index("timestamp").sort_index().astype(float)
-    # Bỏ nến cuối nếu chưa đóng (đang chạy) để tránh dùng giá chưa hoàn chỉnh.
+    # Drop the last bar if it has not closed yet, so we never use an incomplete price.
     now = pd.Timestamp.now(tz="UTC")
     if len(df) and df.index[-1] + pd.Timedelta(milliseconds=tf_ms) > now:
         df = df.iloc[:-1]
@@ -57,7 +57,7 @@ def load_ohlcv(
     exchange: str = "binance",
     refresh: bool = False,
 ) -> pd.DataFrame:
-    """Đọc từ cache nếu có, nếu không thì tải và lưu cache."""
+    """Read from the cache if present; otherwise download and cache."""
     path = _cache_path(exchange, symbol, timeframe)
     if path.exists() and not refresh:
         return pd.read_parquet(path)

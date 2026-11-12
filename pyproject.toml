@@ -1,7 +1,7 @@
 [project]
 name = "crypto-quant"
 version = "0.1.0"
-description = "Dự đoán hướng giá crypto bằng ML cổ điển + backtest walk-forward"
+description = "Crypto price-direction prediction with classical ML and fee-aware walk-forward backtesting"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

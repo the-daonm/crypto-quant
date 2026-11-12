@@ -1,15 +1,15 @@
-exchange: binance          # đổi sang okx / bybit nếu Binance bị chặn
+exchange: binance          # switch to okx / bybit / kraken if Binance is blocked
 symbols: [BTC/USDT, ETH/USDT, SOL/USDT]
 timeframes: [1d, 4h]
 since: "2019-01-01"
-holdout_start: "2025-01-01"  # sau mốc này là holdout: không dùng để chọn cấu hình/tham số
+holdout_start: "2025-01-01"  # data from here on is holdout: never use it for selection
 
-fee: 0.001                 # 0.1% mỗi lần đổi vị thế
-threshold: 0.5             # ngưỡng xác suất mặc định để vào lệnh
-band: 0.05                 # vùng đệm: vào khi p > thr+band, thoát khi p < thr-band
-horizon: 3                 # nhãn = hướng giá sau `horizon` nến
+fee: 0.001                 # 0.1% per position change
+threshold: 0.5             # default probability threshold
+band: 0.05                 # hysteresis: enter if p > thr+band, exit if p < thr-band
+horizon: 3                 # label = price direction after `horizon` bars
 
 walk_forward:
-  train_min: {1d: 730, 4h: 4380}   # số nến train tối thiểu (~2 năm)
-  test_size: {1d: 90, 4h: 540}     # số nến mỗi fold test (~3 tháng)
-  gap: 1                            # embargo giữa train và test
+  train_min: {1d: 730, 4h: 4380}   # minimum training bars (~2 years)
+  test_size: {1d: 90, 4h: 540}     # bars per test fold (~3 months)
+  gap: 1                            # embargo between train and test

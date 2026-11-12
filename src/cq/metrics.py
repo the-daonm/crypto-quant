@@ -1,4 +1,4 @@
-"""Metric cho phân loại và cho chiến lược giao dịch."""
+"""Classification and trading-strategy metrics."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ PERIODS_PER_YEAR = {"1d": 365, "4h": 365 * 6, "1h": 365 * 24}
 
 def classification_metrics(y: pd.Series, proba: pd.Series, threshold: float = 0.5) -> dict:
     pred = (proba > threshold).astype(int)
-    # AUC vô nghĩa khi proba là hằng số (baseline) hoặc y chỉ có một lớp.
+    # AUC is meaningless when proba is constant (baseline) or y has a single class.
     auc = roc_auc_score(y, proba) if proba.nunique() > 1 and y.nunique() > 1 else float("nan")
     return {
         "accuracy": accuracy_score(y, pred),

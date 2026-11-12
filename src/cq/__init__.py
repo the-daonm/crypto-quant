@@ -1,1 +1,1 @@
-"""crypto-quant: dự đoán hướng giá crypto + backtest."""
+"""crypto-quant: crypto price-direction prediction and backtesting."""

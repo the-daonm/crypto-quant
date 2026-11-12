@@ -1,4 +1,4 @@
-"""Các mô hình: baseline, Logistic Regression, LightGBM."""
+"""Models: baseline, Logistic Regression, LightGBM."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ MODEL_NAMES = ["baseline", "logreg", "lightgbm"]
 
 
 class AlwaysUp(BaseEstimator, ClassifierMixin):
-    """Baseline: luôn dự đoán tăng (luôn long) với mọi ngưỡng; tương đương Buy & Hold."""
+    """Baseline: always predicts up (always long) at any threshold, i.e. Buy & Hold."""
 
     def fit(self, X, y):
         self.classes_ = np.array([0, 1])
@@ -30,7 +30,7 @@ def make_model(name: str, seed: int = 42):
     if name == "logreg":
         return make_pipeline(StandardScaler(), LogisticRegression(C=0.1, max_iter=1000))
     if name == "lightgbm":
-        # Cấu hình nhỏ, regularize mạnh: dữ liệu tài chính rất nhiễu, dễ overfit.
+        # Small, heavily regularised trees: financial data is noisy and easy to overfit.
         return LGBMClassifier(
             n_estimators=200,
             learning_rate=0.03,

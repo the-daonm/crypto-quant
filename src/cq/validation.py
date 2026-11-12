@@ -1,4 +1,4 @@
-"""Walk-forward validation (expanding window) + chọn ngưỡng trên dữ liệu train."""
+"""Walk-forward validation (expanding window) and train-only threshold selection."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ THRESHOLD_GRID = np.round(np.arange(0.45, 0.61, 0.01), 2)
 
 
 def walk_forward_splits(n: int, train_min: int, test_size: int, gap: int = 1):
-    """Sinh (train_idx, test_idx). Train mở rộng từ đầu; giữa train và test có `gap` nến."""
+    """Yield (train_idx, test_idx). Train expands from the start; `gap` bars separate train and test."""
     start = train_min + gap
     while start < n:
         end = min(start + test_size, n)
@@ -31,7 +31,7 @@ def _sharpe_long_flat(proba, fwd, thr, fee, band=0.0):
 
 
 def choose_threshold(model_name, X, y, fwd, fee, band=0.0, val_frac=0.25):
-    """Tách đuôi tập train làm validation, chọn ngưỡng có Sharpe cao nhất trên đó."""
+    """Hold out the tail of the training set and pick the threshold with the best Sharpe on it."""
     cut = int(len(X) * (1 - val_frac))
     m = make_model(model_name).fit(X.iloc[:cut], y.iloc[:cut])
     proba = m.predict_proba(X.iloc[cut:])[:, 1]
@@ -42,8 +42,8 @@ def choose_threshold(model_name, X, y, fwd, fee, band=0.0, val_frac=0.25):
 
 @dataclass
 class WalkForwardResult:
-    predictions: pd.DataFrame  # index thời gian: proba, y, fwd_ret, fold, threshold
-    folds: pd.DataFrame  # thông tin từng fold
+    predictions: pd.DataFrame  # time index: proba, y, fwd_ret, fold, threshold
+    folds: pd.DataFrame  # per-fold summary
     importance: pd.Series | None = field(default=None)
 
 
@@ -59,9 +59,9 @@ def run_walk_forward(
     fee: float = 0.001,
     band: float = 0.0,
 ) -> WalkForwardResult:
-    """Huấn luyện lại ở mỗi fold, chỉ dự đoán trên phần test (out-of-sample).
+    """Refit the model in every fold and predict only on its test block (out-of-sample).
 
-    `threshold="auto"`: chọn ngưỡng trên tail của tập train ở mỗi fold (không nhìn test).
+    `threshold="auto"` picks the threshold on the tail of each fold's training set, never on test.
     """
     preds, folds, imps = [], [], []
     for k, (tr, te) in enumerate(walk_forward_splits(len(X), train_min, test_size, gap)):
@@ -95,6 +95,6 @@ def run_walk_forward(
             imps.append(imp)
 
     if not preds:
-        raise ValueError("Không đủ dữ liệu cho walk-forward: giảm train_min hoặc test_size.")
+        raise ValueError("Not enough data for walk-forward: reduce train_min or test_size.")
     importance = pd.DataFrame(imps).mean().sort_values(ascending=False) if imps else None
     return WalkForwardResult(pd.concat(preds), pd.DataFrame(folds), importance)

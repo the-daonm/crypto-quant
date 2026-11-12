@@ -1,8 +1,8 @@
-"""Backtest vectorized cho chiến lược long/flat.
+"""Vectorized backtest for a long/flat strategy.
 
-Quy ước thời gian: tín hiệu được tính sau khi nến t đóng cửa, vị thế được giữ trong
-khoảng t -> t+1, nên nó hưởng `fwd_ret` của nến t (= log return từ close_t tới close_{t+1}).
-Như vậy là tương đương với `position.shift(1) * return` trên chuỗi return thông thường.
+Timing convention: the signal is computed after bar t closes and the position is held
+from t to t+1, so it earns bar t's `fwd_ret` (= log return from close_t to close_{t+1}).
+This is equivalent to `position.shift(1) * return` on an ordinary return series.
 """
 
 from __future__ import annotations
@@ -12,11 +12,12 @@ import pandas as pd
 
 
 def positions(proba: pd.Series, threshold: float | pd.Series = 0.5, band: float = 0.0) -> pd.Series:
-    """Vị thế long/flat có hysteresis.
+    """Long/flat positions with hysteresis.
 
-    Vào lệnh khi proba > threshold + band, thoát khi proba < threshold - band,
-    ở giữa thì giữ nguyên vị thế cũ. band = 0 tương đương với quy tắc proba > threshold.
-    Vùng đệm giúp không mua/bán liên tục khi proba dao động quanh ngưỡng, nên tiết kiệm phí.
+    Enter when proba > threshold + band, exit when proba < threshold - band, and keep the
+    previous position in between. band = 0 is the plain rule proba > threshold.
+    The band stops the strategy from flipping every bar while proba hovers around the
+    threshold, which saves fees.
     """
     if band == 0:
         return (proba > threshold).astype(float)
@@ -33,10 +34,10 @@ def backtest(
     fee: float = 0.001,
     band: float = 0.0,
 ) -> pd.DataFrame:
-    """Trả về DataFrame: position, trades, strat_ret, bh_ret, equity, bh_equity (log-return)."""
+    """Return a DataFrame with position, trades, strat_ret, bh_ret, equity, bh_equity (log returns)."""
     position = positions(proba, threshold, band)
-    trades = position.diff().abs().fillna(position.iloc[0])  # lệnh đầu tiên nếu vào ngay
-    cost = np.log1p(-fee * trades)  # phí tính trên vốn khi đổi vị thế
+    trades = position.diff().abs().fillna(position.iloc[0])  # count the first entry if we start long
+    cost = np.log1p(-fee * trades)  # fee charged on capital whenever the position changes
     strat = position * fwd_ret + cost
     out = pd.DataFrame(
         {

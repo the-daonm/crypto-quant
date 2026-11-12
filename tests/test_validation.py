@@ -8,9 +8,9 @@ def test_splits_are_chronological_with_gap_and_cover_tail():
     splits = list(walk_forward_splits(n, train_min, test_size, gap))
     assert splits
     tested = np.concatenate([te for _, te in splits])
-    # Test không chồng lấn và phủ tới cuối chuỗi.
+    # Test blocks do not overlap and reach the end of the series.
     assert len(tested) == len(np.unique(tested))
     assert tested[-1] == n - 1
     for tr, te in splits:
         assert tr[0] == 0 and len(tr) >= train_min
-        assert te[0] - tr[-1] == gap + 1  # embargo đúng `gap` nến
+        assert te[0] - tr[-1] == gap + 1  # embargo of exactly `gap` bars

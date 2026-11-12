@@ -1,4 +1,4 @@
-"""Nhãn: hướng giá trong `horizon` nến kế tiếp."""
+"""Labels: price direction over the next `horizon` bars."""
 
 from __future__ import annotations
 
@@ -7,22 +7,23 @@ import pandas as pd
 
 
 def forward_return(close: pd.Series, horizon: int = 1) -> pd.Series:
-    """Log return từ close_t tới close_{t+horizon}. NaN ở `horizon` dòng cuối."""
+    """Log return from close_t to close_{t+horizon}. NaN for the last `horizon` rows."""
     logc = np.log(close)
     return logc.shift(-horizon) - logc
 
 
 def direction_label(close: pd.Series, threshold: float = 0.0, horizon: int = 1) -> pd.Series:
-    """1 nếu return `horizon` nến tới > threshold, 0 nếu ngược lại, NaN khi chưa biết."""
+    """1 if the `horizon`-bar forward return > threshold, else 0; NaN when unknown."""
     fwd = forward_return(close, horizon)
     return (fwd > threshold).astype(float).where(fwd.notna())
 
 
 def make_dataset(features: pd.DataFrame, close: pd.Series, threshold: float = 0.0, horizon: int = 1):
-    """Ghép X, y, forward return 1 nến (dùng cho backtest) và bỏ các dòng thiếu dữ liệu.
+    """Join X, y and the 1-bar forward return (used by the backtest), dropping incomplete rows.
 
-    Nhãn nhìn xa `horizon` nến cho bớt nhiễu, còn backtest vẫn đánh giá lại vị thế sau mỗi nến.
-    Vì nhãn của các nến liền nhau chồng lấn nhau, khi chia train/test phải dùng embargo >= horizon.
+    The label looks `horizon` bars ahead to reduce noise, while the backtest still re-evaluates
+    the position every bar. Labels of neighbouring bars overlap, so train/test splits need an
+    embargo of at least `horizon` bars.
     """
     y = direction_label(close, threshold, horizon).rename("y")
     fwd = forward_return(close, 1).rename("fwd_ret")

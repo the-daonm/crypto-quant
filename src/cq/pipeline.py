@@ -1,6 +1,6 @@
-"""Pipeline end-to-end: dữ liệu → feature → walk-forward → backtest → metrics.
+"""End-to-end pipeline: data → features → walk-forward → backtest → metrics.
 
-Chạy: python -m cq.pipeline --symbol BTC/USDT --tf 1d
+Usage: python -m cq.pipeline --symbol BTC/USDT --tf 1d
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def run_experiment(
         fwd,
         train_min=wf_cfg["train_min"][timeframe],
         test_size=wf_cfg["test_size"][timeframe],
-        gap=max(wf_cfg["gap"], horizon),  # nhãn chồng lấn `horizon` nến → embargo tương ứng
+        gap=max(wf_cfg["gap"], horizon),  # labels overlap by `horizon` bars → matching embargo
         threshold=threshold,
         fee=fee,
         band=band,
@@ -83,7 +83,7 @@ def buy_and_hold_metrics(bt: pd.DataFrame, timeframe: str) -> dict:
 
 
 def period_summary(backtests: dict[str, pd.DataFrame], timeframe: str, start=None, end=None) -> pd.DataFrame:
-    """Metric trading của từng model (tên → DataFrame backtest) trên khoảng thời gian [start, end)."""
+    """Trading metrics per model (name → backtest DataFrame) over the period [start, end)."""
     ppy = PERIODS_PER_YEAR[timeframe]
     rows = []
     for name, bt in backtests.items():
@@ -95,7 +95,7 @@ def period_summary(backtests: dict[str, pd.DataFrame], timeframe: str, start=Non
         b = bt[mask]
         if not rows:
             rows.append({"model": "buy_and_hold", **trading_metrics(b["bh_ret"], ppy)})
-        # Phí vào lệnh lần đầu nếu khoảng thời gian bắt đầu khi đang giữ vị thế: bỏ qua cho đơn giản.
+        # If the period starts while already long, the entry fee is not re-charged (kept simple).
         rows.append({"model": name, **trading_metrics(b["strat_ret"], ppy, b["trades"], b["position"])})
     return pd.DataFrame(rows).set_index("model")
 
@@ -123,11 +123,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--symbol", default=cfg["symbols"][0])
     ap.add_argument("--tf", default=cfg["timeframes"][0], choices=list(PERIODS_PER_YEAR))
-    ap.add_argument("--threshold", default=None, help="số (vd 0.55) hoặc 'auto'")
+    ap.add_argument("--threshold", default=None, help="a number (e.g. 0.55) or 'auto'")
     ap.add_argument("--fee", type=float, default=None)
-    ap.add_argument("--band", type=float, default=None, help="vùng đệm quanh ngưỡng (hysteresis)")
-    ap.add_argument("--horizon", type=int, default=None, help="số nến tương lai dùng để tạo nhãn")
-    ap.add_argument("--refresh", action="store_true", help="tải lại dữ liệu, bỏ qua cache")
+    ap.add_argument("--band", type=float, default=None, help="hysteresis band around the threshold")
+    ap.add_argument("--horizon", type=int, default=None, help="number of future bars used to build the label")
+    ap.add_argument("--refresh", action="store_true", help="re-download data, ignoring the cache")
     args = ap.parse_args()
 
     thr = args.threshold
@@ -150,10 +150,10 @@ def main() -> None:
         print(summary)
         hs = cfg.get("holdout_start")
         if hs:
-            print(f"\n— Giai đoạn design (< {hs}): dùng để chọn cấu hình —")
+            print(f"\n— Design period (< {hs}): used for model selection —")
             bts = {m: e.bt for m, e in exps.items()}
             print(period_summary(bts, args.tf, end=hs)[cols])
-            print(f"\n— Giai đoạn holdout (>= {hs}): không dùng khi chọn cấu hình —")
+            print(f"\n— Holdout period (>= {hs}): never used for model selection —")
             print(period_summary(bts, args.tf, start=hs)[cols])
 
     RESULTS_DIR.mkdir(exist_ok=True)
@@ -163,7 +163,7 @@ def main() -> None:
         e.bt.join(e.wf.predictions[["proba", "y", "fold", "threshold"]]).to_csv(
             RESULTS_DIR / f"{tag}_{name}_backtest.csv"
         )
-    print(f"\nĐã lưu kết quả vào {RESULTS_DIR}/{tag}_*.csv")
+    print(f"\nSaved results to {RESULTS_DIR}/{tag}_*.csv")
 
 
 if __name__ == "__main__":
