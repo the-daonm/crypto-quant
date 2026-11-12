@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+notebook = ["jupyter", "matplotlib", "tabulate"]
 
 [build-system]
 requires = ["setuptools>=61"]
