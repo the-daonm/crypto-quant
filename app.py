@@ -9,7 +9,7 @@ from plotly.subplots import make_subplots
 
 from cq.data import load_ohlcv
 from cq.models import MODEL_NAMES
-from cq.pipeline import buy_and_hold_metrics, load_config, run_experiment
+from cq.pipeline import buy_and_hold_metrics, load_config, period_summary, run_experiment
 
 st.set_page_config(page_title="Crypto Quant", layout="wide")
 cfg = load_config()
@@ -21,8 +21,8 @@ def get_ohlcv(symbol: str, tf: str) -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner="Đang chạy walk-forward…")
-def get_experiment(symbol: str, tf: str, model: str, threshold, fee: float):
-    e = run_experiment(get_ohlcv(symbol, tf), tf, model, cfg, threshold, fee)
+def get_experiment(symbol: str, tf: str, model: str, threshold, fee: float, horizon: int, band: float):
+    e = run_experiment(get_ohlcv(symbol, tf), tf, model, cfg, threshold, fee, horizon, band)
     return e.bt, e.wf.predictions, e.wf.folds, e.wf.importance, e.metrics
 
 
@@ -35,10 +35,12 @@ auto_thr = st.sidebar.checkbox("Tự chọn ngưỡng trên dữ liệu train", 
 thr = "auto" if auto_thr else st.sidebar.slider("Ngưỡng xác suất", 0.40, 0.65, float(cfg["threshold"]), 0.01)
 fee_pct = st.sidebar.number_input("Phí mỗi lần đổi vị thế (%)", 0.0, 1.0, cfg["fee"] * 100, 0.01)
 fee = fee_pct / 100
+horizon = st.sidebar.select_slider("Horizon của nhãn (số nến)", [1, 2, 3, 6, 12], value=cfg["horizon"])
+band = st.sidebar.slider("Vùng đệm quanh ngưỡng (hysteresis)", 0.0, 0.10, float(cfg["band"]), 0.01)
 st.sidebar.caption("Dữ liệu: Binance public API qua ccxt. Chỉ dùng cho mục đích học tập.")
 
 # ---------------- Run ----------------
-bt, preds, folds, importance, metrics = get_experiment(symbol, tf, model, thr, fee)
+bt, preds, folds, importance, metrics = get_experiment(symbol, tf, model, thr, fee, horizon, band)
 ohlcv = get_ohlcv(symbol, tf).loc[bt.index[0]: bt.index[-1]]
 bh = buy_and_hold_metrics(bt, tf)
 
@@ -85,7 +87,8 @@ st.plotly_chart(fig, width="stretch")
 
 # ---------------- Comparison table ----------------
 st.subheader("So sánh các mô hình (cùng ngưỡng và phí)")
-rows = [bh] + [get_experiment(symbol, tf, m, thr, fee)[4] for m in MODEL_NAMES]
+all_runs = {m: get_experiment(symbol, tf, m, thr, fee, horizon, band) for m in MODEL_NAMES}
+rows = [bh] + [r[4] for r in all_runs.values()]
 table = pd.DataFrame(rows).set_index("model")
 st.dataframe(
     table.style.format({
@@ -95,6 +98,21 @@ st.dataframe(
     }, na_rep="–"),
     width="stretch",
 )
+
+# ---------------- Design vs holdout ----------------
+hs = cfg.get("holdout_start")
+if hs:
+    bts = {m: r[0] for m, r in all_runs.items()}
+    cols = ["total_return", "cagr", "sharpe", "max_drawdown", "n_trades"]
+    fmt = {"total_return": "{:.1%}", "cagr": "{:.1%}", "sharpe": "{:.2f}", "max_drawdown": "{:.1%}", "n_trades": "{:,.0f}"}
+    st.subheader("Design và holdout")
+    st.caption(f"Cấu hình mặc định được chọn chỉ dựa trên dữ liệu trước {hs}. "
+               "Holdout là dữ liệu chưa từng dùng để chọn cấu hình, nên đây là phép thử trung thực nhất.")
+    a, b = st.columns(2)
+    a.markdown(f"**Design** (< {hs})")
+    a.dataframe(period_summary(bts, tf, end=hs)[cols].style.format(fmt, na_rep="–"), width="stretch")
+    b.markdown(f"**Holdout** (≥ {hs})")
+    b.dataframe(period_summary(bts, tf, start=hs)[cols].style.format(fmt, na_rep="–"), width="stretch")
 
 # ---------------- Folds + importance ----------------
 left, right = st.columns(2)
