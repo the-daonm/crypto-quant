@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -62,11 +63,15 @@ def run_walk_forward(
     """Refit the model in every fold and predict only on its test block (out-of-sample).
 
     `threshold="auto"` picks the threshold on the tail of each fold's training set, never on test.
+    The per-fold `fit_seconds` times only the main fit; the extra fit inside `choose_threshold`
+    (used with `threshold="auto"`) is not included.
     """
     preds, folds, imps = [], [], []
     for k, (tr, te) in enumerate(walk_forward_splits(len(X), train_min, test_size, gap)):
         Xtr, ytr = X.iloc[tr], y.iloc[tr]
+        t0 = time.perf_counter()
         model = make_model(model_name).fit(Xtr, ytr)
+        fit_seconds = time.perf_counter() - t0
         proba = model.predict_proba(X.iloc[te])[:, 1]
 
         thr = (
@@ -88,6 +93,7 @@ def run_walk_forward(
                 "n_test": len(te),
                 "accuracy": acc,
                 "threshold": thr,
+                "fit_seconds": fit_seconds,
             }
         )
         imp = feature_importance(model, X.columns)

@@ -20,10 +20,12 @@ Predict the **direction** (up/down) of BTC, ETH and SOL with classical machine l
 ```bash
 python -m venv .venv && source .venv/bin/activate     # fish: source .venv/bin/activate.fish
 pip install -e ".[dev,notebook]"
+pip install -e ".[models]"                             # optional: the xgboost model (large download on Linux)
 
 pytest                                                 # 13 tests: look-ahead, backtest, walk-forward
 python -m cq.pipeline --symbol BTC/USDT --tf 1d        # full-period + design/holdout metrics, CSVs in results/
 python -m cq.pipeline --symbol ETH/USDT --tf 4h --horizon 1 --band 0   # reproduce the original v1 setup
+python -m cq.pipeline --models lightgbm random_forest mlp   # pick models (default: baseline logreg lightgbm)
 streamlit run app.py                                   # dashboard at http://localhost:8501
 jupyter notebook notebooks/eda.ipynb                   # EDA and results analysis
 ```
@@ -43,7 +45,7 @@ The repository contains no raw data; data is used for educational purposes only.
 |---|---|
 | Features (`features.py`) | 21 technical features: lagged returns, momentum, volatility, RSI, MACD histogram, Bollinger %B, ATR, distance to MA20/50/200, volume z-score, … All features are **causal** (use data ≤ t only). |
 | Labels (`labels.py`) | `y_t = 1` if `close_{t+h} > close_t`, with `h = 3` bars by default |
-| Models (`models.py`) | Always-long baseline · Logistic Regression (standardised, C=0.1) · LightGBM (shallow, heavily regularised) |
+| Models (`models.py`) | Always-long baseline · Logistic Regression (standardised, C=0.1) · LightGBM (shallow, heavily regularised) · Random Forest · XGBoost · small MLP (scikit-learn); see the [model comparison](docs/model-comparison.md) |
 | Validation (`validation.py`) | **Expanding-window walk-forward**: ≥ ~2 years of training, ~3-month test blocks, an embargo of `h` bars (labels overlap), model refit in every fold. All reported results are out-of-sample. |
 | Signals (`backtest.positions`) | **Hysteresis**: enter when p > 0.55, exit when p < 0.45, otherwise keep the current position. The threshold can be chosen `auto` on training data |
 | Backtest (`backtest.py`) | Signal at the close of bar t, position held until the close of bar t+1; 0.1% fee per position change; long/flat only |
@@ -114,6 +116,7 @@ See the [issue tracker](https://github.com/the-daonm/crypto-quant/issues) for pl
 src/cq/        data · features · labels · models · validation · backtest · metrics · pipeline
 app.py         Streamlit dashboard
 notebooks/     EDA and results analysis
+scripts/       compare_models.py: design-period comparison of all models
 docs/          GIAI-THICH.md: beginner explainer (Vietnamese)
 tests/         pytest suite
 .github/       issue and pull request templates
@@ -136,8 +139,9 @@ Built on these open-source libraries (thanks to their authors):
 |---|---|---|
 | [ccxt](https://github.com/ccxt/ccxt) | Exchange data access | MIT |
 | [pandas](https://pandas.pydata.org/) · [NumPy](https://numpy.org/) | Data processing | BSD-3-Clause |
-| [scikit-learn](https://scikit-learn.org/) | Logistic Regression, metrics | BSD-3-Clause |
+| [scikit-learn](https://scikit-learn.org/) | Logistic Regression, Random Forest, MLP, metrics | BSD-3-Clause |
 | [LightGBM](https://github.com/microsoft/LightGBM) | Gradient boosting | MIT |
+| [XGBoost](https://github.com/dmlc/xgboost) | Gradient boosting (optional, `[models]` extra) | Apache-2.0 |
 | [Streamlit](https://streamlit.io/) | Dashboard | Apache-2.0 |
 | [Plotly](https://plotly.com/python/) | Charts | MIT |
 | [PyArrow](https://arrow.apache.org/) | Parquet I/O | Apache-2.0 |

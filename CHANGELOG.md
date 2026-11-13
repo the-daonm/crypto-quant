@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Auto-merge for Dependabot patch and minor updates after CI passes; major updates still need a review.
+- `random_forest`, `xgboost` and `mlp` (scikit-learn `MLPClassifier`) models, available in the CLI (`--models`) and the
+  dashboard; by default both still run only `baseline`, `logreg` and `lightgbm`;
+  `scripts/compare_models.py` and `docs/model-comparison.md` compare all models on the design period (#4).
+- Per-fold training time (`fit_seconds`) in the walk-forward fold summary.
+- Optional dependency `xgboost` (Apache-2.0), installed with the `models` extra: `pip install "crypto-quant[models]"`.
 
 ## [0.2.0] - 2026-11-12
 

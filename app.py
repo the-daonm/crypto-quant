@@ -8,7 +8,7 @@ import streamlit as st
 from plotly.subplots import make_subplots
 
 from cq.data import load_ohlcv
-from cq.models import MODEL_NAMES
+from cq.models import DEFAULT_MODELS, MODEL_NAMES
 from cq.pipeline import buy_and_hold_metrics, load_config, period_summary, run_experiment
 
 st.set_page_config(page_title="Crypto Quant", layout="wide")
@@ -124,7 +124,9 @@ st.plotly_chart(fig, width="stretch")
 
 # ---------------- Comparison table ----------------
 st.subheader("Model comparison (same threshold and fee)")
-all_runs = {m: get_experiment(symbol, tf, m, thr, fee, horizon, band) for m in MODEL_NAMES}
+# Only the fast default models plus the selected one: the full registry is slow to train on every rerun.
+compared = list(dict.fromkeys([*DEFAULT_MODELS, model]))
+all_runs = {m: get_experiment(symbol, tf, m, thr, fee, horizon, band) for m in compared}
 rows = [bh] + [r[4] for r in all_runs.values()]
 table = pd.DataFrame(rows).set_index("model")
 st.dataframe(
@@ -181,7 +183,7 @@ with left:
 with right:
     st.subheader("Feature importance")
     if importance is None:
-        st.info("The baseline has no feature importance.")
+        st.info(f"The {model} model has no feature importance.")
     else:
         top = importance.head(15)[::-1]
         fi = go.Figure(go.Bar(x=top.values, y=top.index, orientation="h", marker_color="#2563eb"))
