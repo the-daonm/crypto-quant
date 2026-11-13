@@ -69,6 +69,6 @@ These numbers come from one run per model, without significance tests (see issue
 ## Reproduce
 
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[dev,models]"          # `models` adds the optional xgboost dependency
 python scripts/compare_models.py     # prints the tables and writes results/model_comparison*.csv
 ```

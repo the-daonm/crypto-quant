@@ -8,6 +8,12 @@ from cq.validation import run_walk_forward
 NO_IMPORTANCE = {"baseline", "mlp"}
 
 
+def _requires(name):
+    """Skip the parametrised case when the model's optional dependency is not installed."""
+    if name == "xgboost":
+        pytest.importorskip("xgboost")
+
+
 @pytest.fixture(scope="module")
 def dataset():
     """Synthetic features with a weak signal in the first column (no network access)."""
@@ -25,6 +31,7 @@ def test_new_models_are_registered():
 
 @pytest.mark.parametrize("name", MODEL_NAMES)
 def test_fit_and_predict_proba_shapes(name, dataset):
+    _requires(name)
     X, y, _ = dataset
     model = make_model(name).fit(X.iloc[:300], y.iloc[:300])
     proba = model.predict_proba(X.iloc[300:])
@@ -35,6 +42,7 @@ def test_fit_and_predict_proba_shapes(name, dataset):
 
 @pytest.mark.parametrize("name", MODEL_NAMES)
 def test_same_seed_gives_same_predictions(name, dataset):
+    _requires(name)
     X, y, _ = dataset
     first = make_model(name, seed=7).fit(X.iloc[:300], y.iloc[:300]).predict_proba(X.iloc[300:])
     second = make_model(name, seed=7).fit(X.iloc[:300], y.iloc[:300]).predict_proba(X.iloc[300:])
@@ -43,6 +51,7 @@ def test_same_seed_gives_same_predictions(name, dataset):
 
 @pytest.mark.parametrize("name", MODEL_NAMES)
 def test_feature_importance_is_normalised_or_none(name, dataset):
+    _requires(name)
     X, y, _ = dataset
     imp = feature_importance(make_model(name).fit(X, y), X.columns)
     if name in NO_IMPORTANCE:
@@ -60,9 +69,18 @@ def test_unknown_model_raises():
 
 @pytest.mark.parametrize("name", ["random_forest", "xgboost", "mlp"])
 def test_walk_forward_runs_out_of_sample_and_records_fit_time(name, dataset):
+    _requires(name)
     X, y, fwd = dataset
     wf = run_walk_forward(name, X, y, fwd, train_min=250, test_size=50, gap=3)
     assert wf.predictions.index.equals(X.index[253:])  # only bars after train_min + gap are predicted
     assert wf.predictions["proba"].between(0, 1).all()
     assert (wf.folds["fit_seconds"] > 0).all()
     assert (wf.importance is None) == (name in NO_IMPORTANCE)
+
+
+def test_xgboost_without_the_optional_dependency_explains_how_to_install(monkeypatch):
+    import sys
+
+    monkeypatch.setitem(sys.modules, "xgboost", None)  # makes `import xgboost` raise ImportError
+    with pytest.raises(ImportError, match=r"crypto-quant\[models\]"):
+        make_model("xgboost")

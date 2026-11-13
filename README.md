@@ -20,6 +20,7 @@ Predict the **direction** (up/down) of BTC, ETH and SOL with classical machine l
 ```bash
 python -m venv .venv && source .venv/bin/activate     # fish: source .venv/bin/activate.fish
 pip install -e ".[dev,notebook]"
+pip install -e ".[models]"                             # optional: the xgboost model (large download on Linux)
 
 pytest                                                 # 13 tests: look-ahead, backtest, walk-forward
 python -m cq.pipeline --symbol BTC/USDT --tf 1d        # full-period + design/holdout metrics, CSVs in results/
@@ -139,7 +140,7 @@ Built on these open-source libraries (thanks to their authors):
 | [pandas](https://pandas.pydata.org/) · [NumPy](https://numpy.org/) | Data processing | BSD-3-Clause |
 | [scikit-learn](https://scikit-learn.org/) | Logistic Regression, Random Forest, MLP, metrics | BSD-3-Clause |
 | [LightGBM](https://github.com/microsoft/LightGBM) | Gradient boosting | MIT |
-| [XGBoost](https://github.com/dmlc/xgboost) | Gradient boosting | Apache-2.0 |
+| [XGBoost](https://github.com/dmlc/xgboost) | Gradient boosting (optional, `[models]` extra) | Apache-2.0 |
 | [Streamlit](https://streamlit.io/) | Dashboard | Apache-2.0 |
 | [Plotly](https://plotly.com/python/) | Charts | MIT |
 | [PyArrow](https://arrow.apache.org/) | Parquet I/O | Apache-2.0 |

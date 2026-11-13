@@ -10,7 +10,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-from xgboost import XGBClassifier
 
 MODEL_NAMES = ["baseline", "logreg", "lightgbm", "random_forest", "xgboost", "mlp"]
 
@@ -58,6 +57,15 @@ def make_model(name: str, seed: int = 42):
             random_state=seed,
         )
     if name == "xgboost":
+        # Optional dependency (`pip install "crypto-quant[models]"`): on Linux the wheel pulls in a large
+        # CUDA library, so it is imported only when the model is actually requested.
+        try:
+            from xgboost import XGBClassifier
+        except ImportError as exc:
+            raise ImportError(
+                'The "xgboost" model needs the optional dependency: pip install "crypto-quant[models]"'
+            ) from exc
+
         # Mirrors the LightGBM configuration so the two boosting libraries are comparable.
         return XGBClassifier(
             n_estimators=200,
@@ -86,7 +94,7 @@ def feature_importance(model, columns) -> dict[str, float] | None:
     if isinstance(model, LGBMClassifier):
         imp = model.booster_.feature_importance(importance_type="gain")
         return dict(zip(columns, imp / imp.sum(), strict=True))
-    if isinstance(model, RandomForestClassifier | XGBClassifier):
+    if hasattr(model, "feature_importances_"):  # Random Forest, XGBoost (checked by attribute: lazy import)
         imp = model.feature_importances_  # impurity decrease (Random Forest) / gain (XGBoost)
         total = imp.sum()
         return dict(zip(columns, imp / total if total > 0 else imp, strict=True))
