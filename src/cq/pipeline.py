@@ -6,7 +6,9 @@ Usage: python -m cq.pipeline --symbol BTC/USDT --tf 1d
 from __future__ import annotations
 
 import argparse
+import sys
 from dataclasses import dataclass
+from importlib import resources
 from pathlib import Path
 
 import pandas as pd
@@ -20,13 +22,23 @@ from cq.metrics import PERIODS_PER_YEAR, classification_metrics, trading_metrics
 from cq.models import MODEL_NAMES
 from cq.validation import WalkForwardResult, run_walk_forward
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+CONFIG_NAME = "config.yaml"
+RESULTS_DIR = Path("results")  # relative to the current working directory
 
 
-def load_config(path: Path = ROOT / "config.yaml") -> dict:
-    with open(path) as f:
-        return yaml.safe_load(f)
+def load_config(path: str | Path | None = None) -> dict:
+    """Load the configuration.
+
+    Lookup order: an explicit `path` → `./config.yaml` in the current working directory →
+    the default configuration shipped inside the package (`cq/default_config.yaml`).
+    """
+    if path is None and Path(CONFIG_NAME).is_file():
+        path = Path(CONFIG_NAME)
+    if path is None:
+        text = resources.files("cq").joinpath("default_config.yaml").read_text(encoding="utf-8")
+    else:
+        text = Path(path).read_text(encoding="utf-8")
+    return yaml.safe_load(text)
 
 
 @dataclass
@@ -118,9 +130,30 @@ def run_all(
     return pd.DataFrame(rows).set_index("model"), exps
 
 
-def main() -> None:
-    cfg = load_config()
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+def main(argv: list[str] | None = None) -> None:
+    # The help text and reports contain characters such as "→" that legacy Windows code pages
+    # (e.g. cp1252 when the output is piped) cannot encode; degrade instead of crashing.
+    # This deliberately changes the process-wide streams, so callers of `main()` (tests, notebooks)
+    # get the same behaviour as the command line; it only affects characters that cannot be encoded.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
+
+    # `--config` is parsed first because the other options take their defaults from the configuration.
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help="configuration file (default: ./config.yaml if present, else the packaged default)",
+    )
+    config_path = pre.parse_known_args(argv)[0].config
+    if config_path is not None and not config_path.is_file():
+        pre.error(f"config file not found: {config_path}")
+    cfg = load_config(config_path)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, parents=[pre]
+    )
     ap.add_argument("--symbol", default=cfg["symbols"][0])
     ap.add_argument("--tf", default=cfg["timeframes"][0], choices=list(PERIODS_PER_YEAR))
     ap.add_argument("--threshold", default=None, help="a number (e.g. 0.55) or 'auto'")
@@ -128,7 +161,7 @@ def main() -> None:
     ap.add_argument("--band", type=float, default=None, help="hysteresis band around the threshold")
     ap.add_argument("--horizon", type=int, default=None, help="number of future bars used to build the label")
     ap.add_argument("--refresh", action="store_true", help="re-download data, ignoring the cache")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     thr = args.threshold
     if thr is not None and thr != "auto":
@@ -156,7 +189,7 @@ def main() -> None:
             print(f"\n— Holdout period (>= {hs}): never used for model selection —")
             print(period_summary(bts, args.tf, start=hs)[cols])
 
-    RESULTS_DIR.mkdir(exist_ok=True)
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     tag = f"{args.symbol.replace('/', '-')}_{args.tf}"
     summary.to_csv(RESULTS_DIR / f"{tag}_summary.csv")
     for name, e in exps.items():

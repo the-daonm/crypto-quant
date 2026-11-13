@@ -21,7 +21,7 @@ Predict the **direction** (up/down) of BTC, ETH and SOL with classical machine l
 python -m venv .venv && source .venv/bin/activate     # fish: source .venv/bin/activate.fish
 pip install -e ".[dev,notebook]"
 
-pytest                                                 # 13 tests: look-ahead, backtest, walk-forward
+pytest                                                 # look-ahead, backtest, walk-forward and config tests
 python -m cq.pipeline --symbol BTC/USDT --tf 1d        # full-period + design/holdout metrics, CSVs in results/
 python -m cq.pipeline --symbol ETH/USDT --tf 4h --horizon 1 --band 0   # reproduce the original v1 setup
 streamlit run app.py                                   # dashboard at http://localhost:8501
@@ -30,6 +30,10 @@ jupyter notebook notebooks/eda.ipynb                   # EDA and results analysi
 
 The first run downloads data and caches it in `data/` (not committed). If Binance is blocked on your network,
 set `exchange` in `config.yaml` to another ccxt exchange such as `okx`, `bybit` or `kraken`.
+
+The configuration is looked up in this order: `--config PATH` → `config.yaml` in the current directory → the
+default shipped inside the package (`src/cq/default_config.yaml`). `data/` and `results/` are created in the
+current directory, so the CLI also works after `pip install` of a released wheel, outside a source checkout.
 
 ## Data
 
@@ -118,6 +122,7 @@ docs/          GIAI-THICH.md: beginner explainer (Vietnamese)
 tests/         pytest suite
 .github/       issue and pull request templates
 config.yaml    pairs, timeframes, fee, horizon, band, holdout, walk-forward windows
+               (kept identical to the packaged default src/cq/default_config.yaml)
 ```
 
 ## Contributing

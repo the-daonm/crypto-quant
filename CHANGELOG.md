@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Auto-merge for Dependabot patch and minor updates after CI passes; major updates still need a review.
+- `--config PATH` option for `python -m cq.pipeline`; a missing file is reported as a normal CLI error.
+
+### Changed
+- `data/` and `results/` are now created in the current working directory instead of the source tree.
+
+### Fixed
+- The CLI now works from an installed wheel: a default configuration is shipped inside the package and used when
+  neither `--config` nor `./config.yaml` is present (#24).
+- `python -m cq.pipeline` no longer crashes with `UnicodeEncodeError` when the output encoding is a legacy
+  Windows code page (e.g. when the output is piped).
 
 ## [0.2.0] - 2026-11-12
 
