@@ -34,7 +34,7 @@ anything.
 | `mlp` | 0.524 | 51.9% | 0.75 | −65% | +159% | 308 | 16.3 | 2/6 |
 
 Training time is the sum of all walk-forward fits for one pair, averaged over the pairs, on a laptop CPU.
-It is indicative only.
+It is indicative only. With `threshold = "auto"` it would not include the extra fit used to choose the threshold.
 
 ### Sharpe ratio per pair
 

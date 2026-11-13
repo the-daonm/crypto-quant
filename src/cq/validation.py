@@ -63,6 +63,8 @@ def run_walk_forward(
     """Refit the model in every fold and predict only on its test block (out-of-sample).
 
     `threshold="auto"` picks the threshold on the tail of each fold's training set, never on test.
+    The per-fold `fit_seconds` times only the main fit; the extra fit inside `choose_threshold`
+    (used with `threshold="auto"`) is not included.
     """
     preds, folds, imps = [], [], []
     for k, (tr, te) in enumerate(walk_forward_splits(len(X), train_min, test_size, gap)):
