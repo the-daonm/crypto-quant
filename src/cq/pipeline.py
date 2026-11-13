@@ -133,6 +133,8 @@ def run_all(
 def main(argv: list[str] | None = None) -> None:
     # The help text and reports contain characters such as "→" that legacy Windows code pages
     # (e.g. cp1252 when the output is piped) cannot encode; degrade instead of crashing.
+    # This deliberately changes the process-wide streams, so callers of `main()` (tests, notebooks)
+    # get the same behaviour as the command line; it only affects characters that cannot be encoded.
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(errors="replace")
