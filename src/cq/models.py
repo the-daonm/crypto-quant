@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import numpy as np
 from lightgbm import LGBMClassifier
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -14,6 +16,8 @@ from sklearn.preprocessing import StandardScaler
 MODEL_NAMES = ["baseline", "logreg", "lightgbm", "random_forest", "xgboost", "mlp"]
 # Fast models the CLI and the dashboard comparison table run by default; the others are opt-in.
 DEFAULT_MODELS = ["baseline", "logreg", "lightgbm"]
+# Threads for Random Forest and XGBoost: half the cores, so a dashboard on a shared host leaves room for others.
+N_JOBS = max(1, (os.cpu_count() or 2) // 2)
 
 
 class AlwaysUp(BaseEstimator, ClassifierMixin):
@@ -55,7 +59,7 @@ def make_model(name: str, seed: int = 42):
             max_depth=4,
             min_samples_leaf=50,
             max_features="sqrt",
-            n_jobs=-1,
+            n_jobs=N_JOBS,
             random_state=seed,
         )
     if name == "xgboost":
@@ -77,7 +81,7 @@ def make_model(name: str, seed: int = 42):
             subsample=0.8,
             colsample_bytree=0.8,
             reg_lambda=1.0,
-            n_jobs=-1,
+            n_jobs=N_JOBS,
             random_state=seed,
             verbosity=0,
         )
