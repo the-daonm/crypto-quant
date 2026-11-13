@@ -145,7 +145,10 @@ def main(argv: list[str] | None = None) -> None:
         default=None,
         help="configuration file (default: ./config.yaml if present, else the packaged default)",
     )
-    cfg = load_config(pre.parse_known_args(argv)[0].config)
+    config_path = pre.parse_known_args(argv)[0].config
+    if config_path is not None and not config_path.is_file():
+        pre.error(f"config file not found: {config_path}")
+    cfg = load_config(config_path)
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, parents=[pre]
     )

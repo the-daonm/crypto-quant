@@ -63,3 +63,11 @@ def test_cli_help_survives_a_legacy_output_encoding(tmp_path, monkeypatch):
     sys.stdout.flush()
     assert exit_info.value.code == 0
     assert b"--config" in buffer.getvalue()
+
+
+def test_cli_reports_a_missing_config_file(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(SystemExit) as exit_info:
+        pipeline.main(["--config", "missing.yaml"])
+    assert exit_info.value.code == 2
+    assert "config file not found: missing.yaml" in capsys.readouterr().err

@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Auto-merge for Dependabot patch and minor updates after CI passes; major updates still need a review.
-- `--config PATH` option for `python -m cq.pipeline`.
+- `--config PATH` option for `python -m cq.pipeline`; a missing file is reported as a normal CLI error.
 
 ### Changed
 - `data/` and `results/` are now created in the current working directory instead of the source tree.
