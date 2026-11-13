@@ -12,6 +12,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 MODEL_NAMES = ["baseline", "logreg", "lightgbm", "random_forest", "xgboost", "mlp"]
+# Fast models the CLI and the dashboard comparison table run by default; the others are opt-in.
+DEFAULT_MODELS = ["baseline", "logreg", "lightgbm"]
 
 
 class AlwaysUp(BaseEstimator, ClassifierMixin):

@@ -17,7 +17,7 @@ from cq.data import load_ohlcv
 from cq.features import build_features
 from cq.labels import make_dataset
 from cq.metrics import PERIODS_PER_YEAR, classification_metrics, trading_metrics
-from cq.models import MODEL_NAMES
+from cq.models import DEFAULT_MODELS, MODEL_NAMES
 from cq.validation import WalkForwardResult, run_walk_forward
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -108,7 +108,7 @@ def run_all(
     fee=None,
     horizon=None,
     band=None,
-    models=MODEL_NAMES,
+    models=DEFAULT_MODELS,
     refresh=False,
 ) -> tuple[pd.DataFrame, dict[str, Experiment]]:
     ohlcv = load_ohlcv(symbol, timeframe, cfg["since"], cfg["exchange"], refresh=refresh)
@@ -127,6 +127,14 @@ def main() -> None:
     ap.add_argument("--fee", type=float, default=None)
     ap.add_argument("--band", type=float, default=None, help="hysteresis band around the threshold")
     ap.add_argument("--horizon", type=int, default=None, help="number of future bars used to build the label")
+    ap.add_argument(
+        "--models",
+        nargs="+",
+        default=DEFAULT_MODELS,
+        choices=MODEL_NAMES,
+        metavar="MODEL",
+        help=f"models to run (default: {' '.join(DEFAULT_MODELS)}; available: {' '.join(MODEL_NAMES)})",
+    )
     ap.add_argument("--refresh", action="store_true", help="re-download data, ignoring the cache")
     args = ap.parse_args()
 
@@ -134,7 +142,9 @@ def main() -> None:
     if thr is not None and thr != "auto":
         thr = float(thr)
 
-    summary, exps = run_all(args.symbol, args.tf, cfg, thr, args.fee, args.horizon, args.band, refresh=args.refresh)
+    summary, exps = run_all(
+        args.symbol, args.tf, cfg, thr, args.fee, args.horizon, args.band, models=args.models, refresh=args.refresh
+    )
     start, end = next(iter(exps.values())).bt.index[[0, -1]]
     used = {
         k: v if v is not None else cfg.get(k)

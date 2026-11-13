@@ -84,3 +84,10 @@ def test_xgboost_without_the_optional_dependency_explains_how_to_install(monkeyp
     monkeypatch.setitem(sys.modules, "xgboost", None)  # makes `import xgboost` raise ImportError
     with pytest.raises(ImportError, match=r"crypto-quant\[models\]"):
         make_model("xgboost")
+
+
+def test_default_models_are_a_fast_subset_of_the_registry():
+    from cq.models import DEFAULT_MODELS
+
+    assert set(DEFAULT_MODELS) <= set(MODEL_NAMES)
+    assert not {"random_forest", "xgboost", "mlp"} & set(DEFAULT_MODELS)

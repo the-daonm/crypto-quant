@@ -25,6 +25,7 @@ pip install -e ".[models]"                             # optional: the xgboost m
 pytest                                                 # 13 tests: look-ahead, backtest, walk-forward
 python -m cq.pipeline --symbol BTC/USDT --tf 1d        # full-period + design/holdout metrics, CSVs in results/
 python -m cq.pipeline --symbol ETH/USDT --tf 4h --horizon 1 --band 0   # reproduce the original v1 setup
+python -m cq.pipeline --models lightgbm random_forest mlp   # pick models (default: baseline logreg lightgbm)
 streamlit run app.py                                   # dashboard at http://localhost:8501
 jupyter notebook notebooks/eda.ipynb                   # EDA and results analysis
 ```
