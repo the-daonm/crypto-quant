@@ -1,5 +1,5 @@
 exchange: binance          # switch to okx / bybit / kraken if Binance is blocked
-symbols: [BTC/USDT, ETH/USDT, SOL/USDT]
+symbols: [BTC/USDT, ETH/USDT, SOL/USDT, BNB/USDT, XRP/USDT, ADA/USDT, DOGE/USDT, AVAX/USDT, LINK/USDT, LTC/USDT]
 timeframes: [1d, 4h]
 since: "2019-01-01"
 holdout_start: "2025-01-01"  # data from here on is holdout: never use it for selection
