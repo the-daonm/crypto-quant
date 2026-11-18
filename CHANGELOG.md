@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- Expand symbol universe from 3 to 10 coins (adding BNB, XRP, ADA, DOGE, AVAX, LINK, LTC) with design-period evaluation and return correlation analysis (#1).
 - Auto-merge for Dependabot patch and minor updates after CI passes; major updates still need a review.
 
 ## [0.2.0] - 2026-11-12
