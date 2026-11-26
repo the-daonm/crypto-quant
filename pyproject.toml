@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff==0.17.5"]
+dev = ["pytest", "ruff==0.17.6"]
 notebook = ["jupyter", "matplotlib", "tabulate"]
 docs = ["mkdocs-material", "mkdocstrings[python]"]
 
